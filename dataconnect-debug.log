@@ -1,0 +1,17 @@
+I1115 10:10:37.793061    2000 load.go:31] Reloading schema and connectors...
+I1115 10:10:37.826376    2000 control.go:94] [/emulator/volley 1741] UpdateResources(): done
+Main schema: sources: schema\schema.gql [1992B] 
+Connector "example": sources: example\mutations.gql [1243B] example\queries.gql [1801B] 
+I1115 10:10:37.845044    2000 codegen.go:80] [connector "example" javascriptSdk] Generating sources into "D:\\Utilitaires\\Internet\\Volley\\src\\dataconnect-generated"
+I1115 10:10:37.854084    2000 collector.go:107] schema extensions wrote into "D:\\Utilitaires\\Internet\\Volley\\dataconnect\\.dataconnect\\schema"
+Generated sources: prelude.gql [73219B] main\query.gql [5099B] main\mutation.gql [13679B] main\implicit.gql [1261B] main\input.gql [28173B] main\relation.gql [14318B] 
+I1115 10:10:37.857442    2000 collector.go:107] connector "example" javascriptSdk wrote into "D:\\Utilitaires\\Internet\\Volley\\src\\dataconnect-generated"
+Generated sources: .guides/setup.md [1631B] .guides/config.json [236B] esm\package.json [17B] .guides/usage.md [3460B] README.md [40937B] angular\package.json [653B] angular\README.md [49480B] index.d.ts [8025B] index.cjs.js [4046B] esm\index.esm.js [3556B] package.json [864B] angular\index.d.ts [3597B] angular\esm\package.json [17B] angular\index.cjs.js [3379B] angular\esm\index.esm.js [3172B] 
+I1115 10:10:37.862512    2000 installsdk.go:86] Running command: D:\Utilitaires\Internet\Node.js\npm.cmd install file:src\dataconnect-generated
+E1115 10:10:38.779809    2000 installsdk.go:88] Failed to install package: exit status 1
+I1115 10:10:38.779809    2000 load.go:109] Finished reloading
+I1115 10:10:38.780315    2000 dev.go:105] Listening on address (HTTP + gRPC): 127.0.0.1:9399
+I1115 10:10:38.780315    2000 dev.go:105] Listening on address (HTTP + gRPC): [::1]:9399
+I1115 10:10:40.223066    2000 control.go:94] [/emulator/volley 1e20] UpdateResources(): done
+Main schema: sources: schema\schema.gql [1992B] 
+Connector "example": sources: example\mutations.gql [1243B] example\queries.gql [1801B] 

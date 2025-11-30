@@ -1,0 +1,6 @@
+<div class="button-container">
+
+  <button  *ngFor="let cat of equipes$ | async" (click)="this.router.navigate(['TBD'])">
+    {{ cat.nom }} ({{ cat.nomCategorie }})
+  </button>
+</div>

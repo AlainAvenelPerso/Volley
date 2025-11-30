@@ -1,0 +1,6 @@
+.no-wrap {
+  white-space: nowrap;   /* empêche les retours à la ligne */
+    display: inline-block;   /* bouton s'adapte au contenu */
+  padding: 8px 12px;       /* espace autour du texte */
+  max-width: 100%;         /* ne dépasse pas le conteneur */
+}

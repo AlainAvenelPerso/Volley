@@ -1,0 +1,33 @@
+{
+  "emulators": {
+    "firestore": {
+      "host": "localhost",
+      "port": 8080,
+      "storagePersistence": {
+        "enabled": true,
+        "path": "./firestore-data"
+      }
+    },
+    "auth": {
+      "host": "localhost",
+      "port": 9099
+    },
+    "ui": {
+      "enabled": true
+    },
+    "dataconnect": {
+      "dataDir": "dataconnect/.dataconnect/pgliteData",
+      "port": 9399
+    },
+    "singleProjectMode": true
+  },
+  "dataconnect": {
+    "source": "dataconnect"
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "europe-west9",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

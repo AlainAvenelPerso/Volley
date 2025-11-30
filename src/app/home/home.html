@@ -1,0 +1,9 @@
+    <div class="home-content">
+      @if ((currentUser$ | async)) {
+        <h1>Bienvenue, {{ currentUser$ | async }}!</h1>
+        <p>Vous êtes connecté à l'application Volley.</p>
+      } @else {
+        <h1>Bienvenue!</h1>
+        <p>Veuillez vous connecter pour accéder à l'application.</p>
+      }
+    </div>

@@ -1,0 +1,13 @@
+<div class="button-container">
+  <button  *ngFor="let match of matchs$ | async" 
+      (click)="this.router.navigate(['TBD'])" 
+      [ngStyle]="{ 'background-color': match.SetsPour != null 
+            ? (match.Lieu === 'D' ? 'darkblue' : 'darkred') 
+            : (match.Lieu === 'D' ? 'blue' : 'red') }"
+      class="no-wrap">
+    {{ match.Adversaire }} - {{ match.Date | date:'dd/MM/yyyy' }} {{ match.SetsPour > match.SetsContre ? 'G ' + match.SetsPour + '/' + match.SetsContre : match.SetsPour < match.SetsContre ? 'P ' + match.SetsPour + '/' + match.SetsContre :'' }}
+
+  </button>
+
+
+</div>

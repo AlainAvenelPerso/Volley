@@ -1,0 +1,38 @@
+<div class="identification-container">
+  @if (isConnected == false) {
+  <section class="id-card">
+    <h3>Connexion</h3>
+
+    <p class="muted">Entrez le nom de l'équipe et le mot de passe</p>
+      <!-- <span  *ngFor="let e of equipesAll$ | async" >
+    {{ e.nom }}
+      </span> -->
+    <form class="login-form" (ngSubmit)="loginWithSupabase()">
+      <!-- <label class="visually-hidden" for="username">Equipe</label>
+      <input id="username" type="text" [(ngModel)]="username" placeholder="Equipe" name="username" required /> -->
+    <!-- Dropdown des équipes -->
+    <label class="visually-hidden" for="team">Equipe</label>
+    <select id="team" [(ngModel)]="username" name="username" required>
+      <option *ngFor="let equipe of equipesAll$ | async" [value]="equipe.nom">
+        {{ equipe.nom }}
+      </option>
+    </select>
+      <label class="visually-hidden" for="password">Mot de passe</label>
+      <input id="password" type="password" [(ngModel)]="password" placeholder="Mot de passe" name="password" required />
+
+      <div class="actions">
+        <button type="submit" class="btn-primary">Se connecter</button>
+      </div>
+    </form>
+  </section>
+   }
+    @else {
+    <section class="id-card welcome">
+      <h3>Bienvenue</h3>
+      <p class="muted">Vous êtes connecté en tant que <strong>{{username}}</strong></p>
+      <div class="actions">
+        <button (click)="disconnect()" class="btn-ghost">Déconnexion</button>
+      </div>
+    </section>
+    }
+</div>
