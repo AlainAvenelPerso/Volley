@@ -7,10 +7,11 @@ import { AuthService } from './services/auth.service';
 import { GlobalService } from './services/global';
 import { SupabaseService } from './services/supabase.service';
 import { Equipe } from './models/models';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, FormsModule, CommonModule],
+  imports: [RouterOutlet, RouterLink, FormsModule, CommonModule, MatDialogModule ],
   templateUrl: './app.html',
   styleUrls: ['./app.scss']
 })
@@ -34,6 +35,8 @@ export class App {
 
 
     this.router.navigate(['poules']);
+    //this.router.navigate(['detailmatch/D/1116/Luzinay - 2']);   // Test detail match
+    
   }
 
 

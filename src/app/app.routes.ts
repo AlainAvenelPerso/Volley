@@ -25,6 +25,10 @@ export const routes: Routes = [
     	{
 		path: 'matchs',
 		loadComponent: () => import('./matchs/matchs').then(m => m.Matchs),
+	}	,
+    	{
+		path: 'detailmatch',
+		loadComponent: () => import('./detail-match/detail-match').then(m => m.DetailMatch),
 	}
 	// add other routes here
 ];

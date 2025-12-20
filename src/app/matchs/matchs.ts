@@ -27,4 +27,8 @@ export class Matchs {
         }
      }
 
+     trackByComposite(Lieu: string, CodeAdversaire: number): string {
+      return `${Lieu}-${CodeAdversaire}`;
+    }
+
 }

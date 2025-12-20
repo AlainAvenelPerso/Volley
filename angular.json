@@ -34,6 +34,7 @@
               }
             ],
             "styles": [
+              "src/volley.scss",
               "src/styles.scss"
             ]
           },
@@ -94,6 +95,7 @@
               }
             ],
             "styles": [
+              "src/volley.scss",
               "src/styles.scss"
             ]
           }

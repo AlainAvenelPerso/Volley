@@ -1,6 +1,14 @@
 <div class="button-container">
-  <button  *ngFor="let match of matchs$ | async" 
-      (click)="this.router.navigate(['TBD'])" 
+  @for (match of matchs$ | async; track trackByComposite(match.Lieu, match.CodeAdversaire)) {
+  <button
+      (click)="this.router.navigate(['detailmatch'], 
+          { state: {  Lieu: match.Lieu, 
+                      CA: match.CodeAdversaire,
+                      NA: match.Adversaire,
+                      DM: match.Date,
+                      SD: match.SetsPour,
+                      SE: match.SetsContre
+                    }})" 
       [ngStyle]="{ 'background-color': match.SetsPour != null 
             ? (match.Lieu === 'D' ? 'darkblue' : 'darkred') 
             : (match.Lieu === 'D' ? 'blue' : 'red') }"
@@ -8,6 +16,5 @@
     {{ match.Adversaire }} - {{ match.Date | date:'dd/MM/yyyy' }} {{ match.SetsPour > match.SetsContre ? 'G ' + match.SetsPour + '/' + match.SetsContre : match.SetsPour < match.SetsContre ? 'P ' + match.SetsPour + '/' + match.SetsContre :'' }}
 
   </button>
-
-
+}
 </div>

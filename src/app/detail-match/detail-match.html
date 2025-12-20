@@ -1,0 +1,40 @@
+<div class="centre">
+  <h2>
+    @if ((Lieu == "D")) {
+    <p>{{ nomEquipeConnectee }}{{separator}}{{ nomAdversaire }}</p>
+    } @else {
+    <p>{{nomAdversaire}}{{separator}}{{nomEquipeConnectee}}</p>
+    }
+  </h2>
+  <h3>{{ DateMatch | date:'dd/MM/yyyy' }} </h3>
+
+  <!-- <input #myInput class="score" /> -->
+  @if (ScoreArray[0] != null && (ScoreArray[0] + ScoreArray[1]) > 0) {
+  <p><b>Score :</b> {{ ScoreArray[0] }} / {{ ScoreArray[1] }} </p>
+  }
+
+  @for (i of [1,2,3,4,5]; track i) {
+  @if (i < iVisibleSlider) { <button class="bouton" (click)="augmenteScore(i, 0)">+</button>
+    <input #myInput class="score" [value]="sets[i-1][0] > 0 ? sets[i-1][0] : ''" /> - <input #myInput class="score" [value]="sets[i-1][1] > 0 ? sets[i-1][1] : ''" />
+    <button class="bouton" (click)="augmenteScore(i, 1)">+</button>
+
+    @if (i == iVisibleSlider - 1) { <!--   Sur le dernier set saisi, on affiche le bouton effacer -->
+    <button class="boutonGomme" (click)="effacerSet()" mat-raised-button color="primary">
+      <img src="assets/gomme.png" alt="Effacer" width="20" height="20" />
+    </button>
+    }
+    <BR>
+    }
+
+    @else if (i == iVisibleSlider && bMatchGagne == false) {  <!-- Set en cours de saisie -->
+    <mat-slider min="-1" max="1" step="1">
+      <input matSliderThumb [(ngModel)]="position" (valueChange)="onSliderChangeEvent($event)" />
+    </mat-slider>
+    }
+    }
+    <BR>
+    @if (iVisibleSlider > 1) {
+        <button (click)="validationScore()" mat-raised-button color="primary" [disabled]="!bValidScore">Valider</button>
+    }
+    
+</div>

@@ -19,17 +19,17 @@ export class SupabaseService {
     //console.log('Supabase client initialized', supabase.supabaseUrl, supabase.supabaseKey);
   }
 
-   async loginParameter(parameter: string) {
+  async loginParameter(parameter: string) {
     try {
       // Hash the password with SHA256
       console.log('Récupération du paramètre Supabase pour', parameter);
-      
+
       const { data, error } = await this.supabase
         .from('Params')
         .select('Valeur')
         .eq('Nom', parameter)
         .single();
-      
+
       if (error) {
         if (error.code === 'PGRST116') {
           // No rows returned
@@ -37,12 +37,12 @@ export class SupabaseService {
         }
         throw new Error(error.message);
       }
-      
+
       if (data) {
         console.log('Paramètre récupéré : ', data);
         return data;
       }
-      
+
       throw new Error('Paramètre non trouvé.');
     } catch (error: any) {
       console.error('Erreur Supabase:', error.message);
@@ -54,14 +54,14 @@ export class SupabaseService {
     try {
       // Hash the password with SHA256
       console.log('Récupération des bornes des catégories pour la saison', saison);
-      
+
       const { data, error } = await this.supabase
         .from('Categories')
-          .select('Code_Categorie')
-          .eq('Saison', saison)
-          .order('Code_Categorie', { ascending: fAscending })
-          .limit(1);
-      
+        .select('Code_Categorie')
+        .eq('Saison', saison)
+        .order('Code_Categorie', { ascending: fAscending })
+        .limit(1);
+
       if (error) {
         if (error.code === 'PGRST116') {
           // No rows returned
@@ -69,12 +69,12 @@ export class SupabaseService {
         }
         throw new Error(error.message);
       }
-      
+
       if (data) {
         console.log('Categorie : ', fAscending, data[0].Code_Categorie);
-        return data[0].Code_Categorie; 
+        return data[0].Code_Categorie;
       }
-      
+
       throw new Error('borneCategorie non trouvée.');
     } catch (error: any) {
       console.error('Erreur Supabase:', error.message);
@@ -93,23 +93,23 @@ export class SupabaseService {
   //     }, interval);
   //   });
   // }
-  
 
-   async loadCategories(saison: string): Promise<Categorie[]> {
+
+  async loadCategories(saison: string): Promise<Categorie[]> {
     // console.log('loadCategories called with saison:', saison);
     // const saisonValide = await this.waitUntilDefined(() => this.gl);
     // console.log('loadCategories called with saison récup :', saison);
     try {
       // Hash the password with SHA256
       console.log('Récupération des catégories pour la saison', saison);
-      
+
       const { data, error } = await this.supabase
         .from('Categories')
-          .select('Code_Categorie, Nom_Categorie')
-          .eq('Saison', String(saison))
-          .order('Code_Categorie', { ascending: true });
+        .select('Code_Categorie, Nom_Categorie')
+        .eq('Saison', String(saison))
+        .order('Code_Categorie', { ascending: true });
 
-      
+
       if (error) {
         if (error.code === 'PGRST116') {
           // No rows returned
@@ -117,33 +117,33 @@ export class SupabaseService {
         }
         throw new Error(error.message);
       }
-      
 
 
-    if (data) {
-      console.log('Données des catégories récupérées : ', data);
-      // Mapper les résultats Supabase vers ta classe Categorie
-      const categories = data.map(
-        (row: any) => new Categorie(row.Code_Categorie, row.Nom_Categorie)
-      );
-      console.log('Catégories chargées :', categories);
-      return categories;
+
+      if (data) {
+        console.log('Données des catégories récupérées : ', data);
+        // Mapper les résultats Supabase vers ta classe Categorie
+        const categories = data.map(
+          (row: any) => new Categorie(row.Code_Categorie, row.Nom_Categorie)
+        );
+        console.log('Catégories chargées :', categories);
+        return categories;
+      }
+
+      throw new Error('Catégories non trouvées.');
+    } catch (error: any) {
+      console.error('Erreur Supabase:', error.message);
+      throw error;
     }
-
-    throw new Error('Catégories non trouvées.');
-  } catch (error: any) {
-    console.error('Erreur Supabase:', error.message);
-    throw error;
-  }
   }
 
   async loginWithQuery(username: string, password: string, categories: Categorie[] = []) {
     try {
       // Hash the password with SHA256
       const passwordHash = crypto.SHA256(password).toString();
-      
+
       console.log('Tentative de connexion Supabase pour', username, passwordHash);
-      
+
       // Query the 'Equipes' table for matching username and password hash
       const { data, error } = await this.supabase
         .from('Equipes')
@@ -155,7 +155,7 @@ export class SupabaseService {
         .gte('Code_Categorie', Math.min(...categories.map(c => c.codeCategorie)))
         .lte('Code_Categorie', Math.max(...categories.map(c => c.codeCategorie)))
         .single();
-      
+
       if (error) {
         if (error.code === 'PGRST116') {
           // No rows returned - invalid credentials
@@ -163,12 +163,12 @@ export class SupabaseService {
         }
         throw new Error(error.message);
       }
-      
+
       if (data) {
         console.log('Connexion Supabase réussie pour', username, data);
         return data;
       }
-      
+
       throw new Error('Identifiant ou mot de passe incorrect.');
     } catch (error: any) {
       console.error('Erreur Supabase:', error.message);
@@ -191,7 +191,7 @@ export class SupabaseService {
   async loadEquipesClub(equipe: string, categories: Categorie[] = []): Promise<Equipe[]> {
     try {
 
-      const club = equipe.split(" - ")[0]; 
+      const club = equipe.split(" - ")[0];
 
       console.log('Récupération des équipes du club pour le club', club);
       // Query the 'Equipes' table for matching username and password hash
@@ -202,7 +202,7 @@ export class SupabaseService {
         .gte('Code_Categorie', Math.min(...categories.map(c => c.codeCategorie)))
         .lte('Code_Categorie', Math.max(...categories.map(c => c.codeCategorie)))
         .order('Nom_Equipe', { ascending: true });
-        
+
       if (error) {
         if (error.code === 'PGRST116') {
           // No rows returned - invalid credentials
@@ -210,15 +210,15 @@ export class SupabaseService {
         }
         throw new Error(error.message);
       }
-      
+
       if (data) {
         console.log('data equipes du club', data);
         const equipes = data.map(
-        (row: any) => new Equipe(row.Code_Equipe, row.Nom_Equipe, row.Code_Categorie, row.Categories.Nom_Categorie)
-      );
+          (row: any) => new Equipe(row.Code_Equipe, row.Nom_Equipe, row.Code_Categorie, row.Categories.Nom_Categorie)
+        );
         return equipes;
       }
-      
+
       throw new Error('Problème lors de la récupération des équipes du club.');
     } catch (error: any) {
       console.error('Erreur Supabase:', error.message);
@@ -226,7 +226,7 @@ export class SupabaseService {
     }
   }
 
-async loadEquipes(categories: Categorie[]): Promise<Equipe[]> {
+  async loadEquipes(categories: Categorie[]): Promise<Equipe[]> {
     try {
 
 
@@ -238,7 +238,7 @@ async loadEquipes(categories: Categorie[]): Promise<Equipe[]> {
         .gte('Code_Categorie', Math.min(...categories.map(c => c.codeCategorie)))
         .lte('Code_Categorie', Math.max(...categories.map(c => c.codeCategorie)))
         .order('Nom_Equipe', { ascending: true });
-        
+
       if (error) {
         if (error.code === 'PGRST116') {
           // No rows returned - invalid credentials
@@ -246,15 +246,15 @@ async loadEquipes(categories: Categorie[]): Promise<Equipe[]> {
         }
         throw new Error(error.message);
       }
-      
+
       if (data) {
         console.log('Equipes', data);
         const equipes = data.map(
-        (row: any) => new Equipe(row.Code_Equipe, row.Nom_Equipe, row.Code_Categorie, row.Categories.Nom_Categorie)
-      );
+          (row: any) => new Equipe(row.Code_Equipe, row.Nom_Equipe, row.Code_Categorie, row.Categories.Nom_Categorie)
+        );
         return equipes;
       }
-      
+
       throw new Error('Problème lors de la récupération des équipes.');
     } catch (error: any) {
       console.error('Erreur Supabase:', error.message);
@@ -262,17 +262,17 @@ async loadEquipes(categories: Categorie[]): Promise<Equipe[]> {
     }
   }
 
-    async loadMatchsEquipe(equipe: number) {
+  async loadMatchsEquipe(equipe: number) {
     try {
       console.log('Récupération des matchs pour l\'équipe', equipe);
-      
+
       // Query the 'Equipes' table for matching username and password hash
       const { data, error } = await this.supabase
         .from('MatchsEquipe')
-        .select('Lieu, Adversaire, Date, SetsPour, SetsContre')
+        .select('Lieu, CodeAdversaire, Adversaire, Date, SetsPour, SetsContre')
         .eq('EquipeChoisie', equipe)
         .order('Date', { ascending: true });
-      
+
       if (error) {
         if (error.code === 'PGRST116') {
           // No rows returned - invalid credentials
@@ -280,12 +280,12 @@ async loadEquipes(categories: Categorie[]): Promise<Equipe[]> {
         }
         throw new Error(error.message);
       }
-      
+
       if (data) {
         console.log('Matchs récupérés pour l\'équipe', equipe, data);
         return data;
       }
-      
+
       throw new Error('Identifiant ou mot de passe incorrect.');
     } catch (error: any) {
       console.error('Erreur Supabase:', error.message);
@@ -293,4 +293,75 @@ async loadEquipes(categories: Categorie[]): Promise<Equipe[]> {
     }
   }
 
+  async loadScoreMatch(ED: number, EE: number) {
+    try {
+      console.log('Récupération du score pour le match', ED, EE);
+
+      // Query the 'Equipes' table for matching username and password hash
+      const { data, error } = await this.supabase
+        .from('Matchs')
+        .select('Sets_Domicile, Sets_Exterieur, S1D, S2D, S3D, S4D, S5D, S1E, S2E, S3E, S4E, S5E')
+        .eq('Equipe_Domicile', ED)
+        .eq('Equipe_Exterieure', EE)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No rows returned - invalid credentials
+          throw new Error('Identifiant ou mot de passe incorrect.');
+        }
+        throw new Error(error.message);
+      }
+
+      if (data) {
+        console.log('Score récupéré pour le match', ED, EE, data);
+        return data;
+      }
+
+      throw new Error('Identifiant ou mot de passe incorrect.');
+    } catch (error: any) {
+      console.error('Erreur Supabase:', error.message);
+      throw error;
+    }
+  }
+  async enregistrerScoreMatch(Lieu: string, ED: number, EE: number, Score: number[], sets: number[][]): Promise<void> {
+    try {
+      console.log('Enregistrement du score pour le match', EE, sets);
+
+      const updateData: Record<string, any> = {};
+
+      updateData['Sets_Domicile'] = Score[0];
+      updateData['Sets_Exterieur'] = Score[1];
+
+      const today: string = new Date().toISOString().split('T')[0];
+
+      if (Lieu == "D") {
+        updateData['VD'] = true;
+        updateData['VD_DATE'] = today;
+      } else {
+        updateData['VE'] = true;
+        updateData['VE_DATE'] = today;
+      }
+
+      sets.forEach((set, index) => {
+        if (set[0] != -1) {       // -1 est utilisé pour indiquer un set non joué
+          const setNumber = index + 1;
+          updateData[`S${setNumber}D`] = set[0];
+          updateData[`S${setNumber}E`] = set[1];
+        }
+      });
+
+      await this.supabase
+        .from('Matchs')
+        .update(updateData)
+        .eq('Equipe_Domicile', ED)
+        .eq('Equipe_Exterieure', EE);
+
+      console.log('Score enregistré avec succès pour le match');
+    }
+    catch (error: any) {
+      console.error('Erreur Supabase lors de l\'enregistrement du score:', error.message);
+      throw error;
+    }
+  }
 }

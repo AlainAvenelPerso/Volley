@@ -5,6 +5,7 @@ import { SupabaseService } from './supabase.service';
 import { Categorie, Equipe, Match } from '../models/models';     // On peut les merger! 
 import { AppMessageService } from './app-message.service';
 import { Router } from '@angular/router';
+import { environment } from '../../../src/environments/environment';
 
 @Injectable({
   providedIn: 'root'   // disponible partout dans l'app
@@ -33,6 +34,8 @@ export class GlobalService {
   readonly equipesAll$ = this.equipesAllSubject.asObservable();
   private matchsSubject = new BehaviorSubject<Match[]>([]);
   readonly matchs$ = this.matchsSubject.asObservable();
+  private scoreMatchSubject = new BehaviorSubject<any>(null);
+  readonly scoreMatch$ = this.scoreMatchSubject.asObservable();
 
 
   constructor(
@@ -116,6 +119,25 @@ export class GlobalService {
   getMatchs(): Observable<Match[]> {
     return this.matchs$;
   }
+
+  loadScoreMatch(Lieu: string, CodeAdversaire: number): void {
+    if (Lieu == "D") 
+      this.supabase.loadScoreMatch(this.equipeConnectee.code, CodeAdversaire).then((data: any) => {
+      console.log('Score chargé dans GlobalService :',  data);
+      this.scoreMatchSubject.next(data);
+      // Traiter les données du score ici si nécessaire
+    });
+    else
+      this.supabase.loadScoreMatch(CodeAdversaire, this.equipeConnectee.code).then((data: any) => {
+      console.log('Score chargé dans GlobalService :',  data);
+      this.scoreMatchSubject.next(data);
+      // Traiter les données du score ici si nécessaire
+    });
+  }
+
+  getScoreMatch(): Observable<any> {
+    return this.scoreMatch$;
+  }
   // Getter
   getEquipeConnecteeO(): Observable<Equipe> {
     return this.equipeConnectee$;
@@ -161,5 +183,18 @@ export class GlobalService {
 
   getPouleSelected(): string {
     return this.pouleSelected;
+  }
+
+  logDebug(...args: any[]) {
+  if (!environment.production) {
+    console.log(...args);
+  }
+  }
+
+  enregistrerScoreMatch(Lieu: string, ED : number, EE : number, Score: number[], sets :number[][]): void {
+    this.logDebug('GlobalService: enregistrerScoreMatch', ED, EE, sets);
+    this.supabase.enregistrerScoreMatch(Lieu, ED, EE, Score, sets).then(() => {
+      console.log('Score enregistré avec succès');
+    });
   }
 }

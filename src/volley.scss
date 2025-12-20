@@ -1,0 +1,28 @@
+
+@use '@angular/material' as mat;
+
+// Create a theme directly from a seed color
+$my-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$red-palette, // built-in seed palette
+    tertiary: mat.$green-palette, // optional extra
+  )
+));
+
+
+// Appliquer le thème à l’ensemble de l’app
+:root {
+  @include mat.all-component-themes($my-theme);
+}
+
+.mdc-slider__track--active_fill{
+  color: red !important;
+  border-color: red !important;
+  opacity: 1 !important;
+}
+.mdc-slider__track--inactive {
+  background-color: red !important;
+  opacity: 1 !important;
+}
+

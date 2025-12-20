@@ -4,21 +4,18 @@
     <h3>Connexion</h3>
 
     <p class="muted">Entrez le nom de l'équipe et le mot de passe</p>
-      <!-- <span  *ngFor="let e of equipesAll$ | async" >
-    {{ e.nom }}
-      </span> -->
     <form class="login-form" (ngSubmit)="loginWithSupabase()">
-      <!-- <label class="visually-hidden" for="username">Equipe</label>
-      <input id="username" type="text" [(ngModel)]="username" placeholder="Equipe" name="username" required /> -->
     <!-- Dropdown des équipes -->
     <label class="visually-hidden" for="team">Equipe</label>
     <select id="team" [(ngModel)]="username" name="username" required>
-      <option *ngFor="let equipe of equipesAll$ | async" [value]="equipe.nom">
+        @for (equipe of equipesAll$ | async; track equipe.nom) {
+      <option [value]="equipe.nom">
         {{ equipe.nom }}
       </option>
+    }
     </select>
       <label class="visually-hidden" for="password">Mot de passe</label>
-      <input id="password" type="password" [(ngModel)]="password" placeholder="Mot de passe" name="password" required />
+      <input id="password" class="pwd-input" type="password" [(ngModel)]="password" placeholder="Mot de passe" name="password" required />
 
       <div class="actions">
         <button type="submit" class="btn-primary">Se connecter</button>

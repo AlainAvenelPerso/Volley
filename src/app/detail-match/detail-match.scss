@@ -1,0 +1,35 @@
+.centre {
+    text-align: center;
+}
+
+
+
+.example-margin {
+  margin: 8px;
+}
+
+.score {
+  width: 40px;        /* largeur du champ */
+  height: 20px;        /* hauteur du champ */
+  text-align: center;  /* centre le texte horizontalement */
+  font-size: 16px;     
+}
+
+.bouton {
+  padding: 3px;
+  margin: 5px;
+}
+
+.boutonGomme {
+  padding: 3px;
+  margin: 5px;
+  vertical-align: middle;
+}
+
+button:disabled {
+  background-color: #ccc;   /* gris clair */
+  color: #666;              /* texte gris */
+  cursor: not-allowed;      /* curseur barré */
+  opacity: 0.7;             /* effet visuel */
+}
+

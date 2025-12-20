@@ -22,13 +22,17 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/animations": "^20.3.0",
+    "@angular/cdk": "^21.0.2",
     "@angular/common": "^20.3.0",
     "@angular/compiler": "^20.3.0",
     "@angular/core": "^20.3.0",
     "@angular/fire": "^20.0.1",
     "@angular/forms": "^20.3.0",
+    "@angular/material": "^21.0.2",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
+    "@material/slider": "^14.0.0",
     "@supabase/supabase-js": "^2.81.1",
     "crypto-js": "^4.2.0",
     "firebase": "^12.5.0",
@@ -48,6 +52,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "sass": "^1.94.2",
     "typescript": "~5.9.2"
   }
 }
