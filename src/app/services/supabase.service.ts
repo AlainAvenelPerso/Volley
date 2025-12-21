@@ -4,7 +4,11 @@ import { supabase } from '../../environments/environment';
 import * as crypto from 'crypto-js';
 import { min } from 'rxjs';
 import { Categorie, Equipe } from '../models/models';
+import type { TClassement } from '../models/models';
 
+
+const POINT_GAGNANT = 3;      // 3 points pour une victoire
+const POINT_PERDANT = 1       // 1 point pour une défaite
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
@@ -324,6 +328,7 @@ export class SupabaseService {
       throw error;
     }
   }
+
   async enregistrerScoreMatch(Lieu: string, ED: number, EE: number, Score: number[], sets: number[][]): Promise<void> {
     try {
       console.log('Enregistrement du score pour le match', EE, sets);
@@ -364,4 +369,194 @@ export class SupabaseService {
       throw error;
     }
   }
+
+  async chargeClassementCategorie(CodeCategorie: number) {
+    try {
+      console.log('Chargement du classement pour la catégorie', CodeCategorie);
+
+      // Query the 'Equipes' table for matching username and password hash
+      const { data, error } = await this.supabase
+        .from("Equipes")
+        .select("Code_Equipe, Nom_Equipe")
+        .eq("Code_Categorie", CodeCategorie)
+        .order("Code_Equipe");
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No rows returned - invalid credentials
+          throw new Error('Identifiant ou mot de passe incorrect.');
+        }
+        throw new Error(error.message);
+      }
+
+      if (data) {
+        console.log('Classement récupéré pour la catégorie', CodeCategorie, data);
+
+        const TabEquipes: TClassement[] = [];
+
+        data.forEach((row) => {
+          TabEquipes.push({
+            points: 0,
+            gas: 0,
+            gap: 0,
+            codeEquipe: row.Code_Equipe,
+            nbJoues: 0,
+            nbGagnes: 0,
+            nbPerdus: 0,
+            nbForfaits: 0,
+            penalites: 0,
+            nomEquipe: row.Nom_Equipe,
+          });
+        });
+
+        console.log('Tableau du classement construit :', TabEquipes);
+
+        const Nb = TabEquipes.length;
+
+        for (let i = 0; i < Nb; i++) {
+          const equipe = TabEquipes[i].codeEquipe;
+
+          // Récupération des matchs à domicile
+          const { data: matchs, error } = await this.supabase
+            .from("Matchs")
+            .select(
+              "Equipe_Exterieure, Sets_Domicile, Sets_Exterieur, S1D, S1E, S2D, S2E, S3D, S3E, S4D, S4E, S5D, S5E"
+            )
+            .eq("Equipe_Domicile", equipe);
+
+          if (error) {
+            console.error("Erreur Supabase :", error);
+            continue;
+          }
+
+          //console.log('Matchs à domicile récupérés pour l\'équipe', equipe, matchs);
+          for (const m of matchs) {
+            const EquipExtIndex =
+              m.Equipe_Exterieure - m['Equipe_Exterieure'] + Nb - 1;
+
+            const SD = m.Sets_Domicile;
+            const SE = m.Sets_Exterieur;
+
+            let deltaPoints = 0;
+            let forfait = "";
+            const gagnant = this.chercheGagnantPoints(m, "D", "E", (d) => {
+              //console.log('Delta points domicile trouvé d:', d);
+              deltaPoints = d;
+            }, (f) => {
+              //console.log('Delta points domicile trouvé f:', f);
+              forfait = f;
+            });
+            //console.log('Gagnant du match:', gagnant, 'forfait:', forfait);
+            if (SD !== 0 || SE !== 0) {
+              // Match joué
+              TabEquipes[i].nbJoues += 1;
+              TabEquipes[EquipExtIndex].nbJoues += 1;
+
+              if (gagnant === "D") {
+                // Victoire domicile
+                TabEquipes[i].points += POINT_GAGNANT;
+                TabEquipes[i].gas += SD - SE;
+                TabEquipes[i].gap += deltaPoints;
+                TabEquipes[i].nbGagnes += 1;
+
+                if (forfait === "E") {
+                  TabEquipes[EquipExtIndex].nbForfaits += 1;
+                } else {
+                  TabEquipes[EquipExtIndex].points += POINT_PERDANT;
+                  TabEquipes[EquipExtIndex].nbPerdus += 1;
+                }
+
+                TabEquipes[EquipExtIndex].gas -= SD - SE;
+                TabEquipes[EquipExtIndex].gap -= deltaPoints;
+              } else if (gagnant === "E") {
+                // Victoire extérieure
+                if (forfait === "D") {
+                  TabEquipes[i].nbForfaits += 1;
+                } else {
+                  TabEquipes[i].points += POINT_PERDANT;
+                  TabEquipes[i].nbPerdus += 1;
+                }
+
+                TabEquipes[i].gas -= SE - SD;
+                TabEquipes[i].gap += deltaPoints;
+
+                TabEquipes[EquipExtIndex].points += POINT_GAGNANT;
+                TabEquipes[EquipExtIndex].gas += SE - SD;
+                TabEquipes[EquipExtIndex].gap -= deltaPoints;
+                TabEquipes[EquipExtIndex].nbGagnes += 1;
+              }
+            }
+          }
+        }
+
+
+        console.log('Tableau du classement mis à jour :', TabEquipes);
+
+        TabEquipes.sort((a, b) => {
+          // 1. Trier par points (descendant)
+          if (b.points !== a.points) return b.points - a.points;
+
+          // 2. Puis par GAS (descendant)
+          if (b.gas !== a.gas) return b.gas - a.gas;
+
+          // 3. Puis par GAP (descendant)
+          return b.gap - a.gap;
+        });
+
+        console.log('Tableau du classement trié :', TabEquipes);
+
+        return TabEquipes;
+      }
+
+      throw new Error('Identifiant ou mot de passe incorrect.');
+    } catch (error: any) {
+      console.error('Erreur Supabase:', error.message);
+      throw error;
+    }
+  }
+
+  chercheGagnantPoints(
+    match: any,
+    L1: "D" | "E",
+    L2: "D" | "E",
+    setDeltaPoints: (d: number) => void,
+    setForfait: (f: "D" | "E" | "") => void
+  ): "D" | "E" | null{
+    //console.log('chercheGagnantPoints appelé avec match:', match, L1, L2);
+    if (match.Sets_Domicile === null)
+      return null; // Pas de score, pas de gagnant
+    let PD = 0; // Points domicile
+    let PE = 0; // Points extérieur
+    let forfait: "D" | "E" | "" = "";
+
+    for (let i = 1; i <= 5; i++) {
+      const keyD = `S${i}${L1}`;
+      const keyE = `S${i}${L2}`;
+
+      PD += match[keyD] ?? 0;
+      PE += match[keyE] ?? 0;
+
+      // Premier set 25-0 => Forfait
+      if (i === 1) {
+        if (PD === 25 && PE === 0) forfait = "E"; // Forfait extérieur
+        if (PE === 25 && PD === 0) forfait = "D"; // Forfait domicile
+      }
+    }
+
+    setForfait(forfait);
+
+    const deltaPoints = PD - PE;
+    setDeltaPoints(deltaPoints);
+
+    const deltaSets =
+      match.Sets_Domicile - match.Sets_Exterieur;
+
+    if (deltaSets > 0) return "D"; // Victoire domicile
+    if (deltaSets < 0) return "E"; // Victoire extérieur
+
+    // Égalité en sets → départage aux points
+    return PD > PE ? "D" : "E";
+  }
+
+
 }

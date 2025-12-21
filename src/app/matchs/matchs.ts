@@ -8,12 +8,15 @@ import { AppMessageService } from '../services/app-message.service';
 
 @Component({
   selector: 'app-matchs',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './matchs.html',
   styleUrl: './matchs.scss',
 })
 export class Matchs {
   matchs$!: Observable<Match[]>;
+  page = 0;
+
 
       constructor(public router: Router, private globalService: GlobalService) { }
 
@@ -30,5 +33,13 @@ export class Matchs {
      trackByComposite(Lieu: string, CodeAdversaire: number): string {
       return `${Lieu}-${CodeAdversaire}`;
     }
+
+      onSwipeLeft() {
+    this.page = Math.min(this.page + 1, 1); // 2 pages max
+  }
+
+  onSwipeRight() {
+    this.page = Math.max(this.page - 1, 0);
+  }
 
 }

@@ -68,5 +68,17 @@ export class Score {
     this.Sets_Domicile = Sets_Domicile;
     this.Sets_Exterieur = Sets_Exterieur;
   }
-
 }
+
+export type TClassement = {
+  points: number;
+  gas: number;
+  gap: number;
+  codeEquipe: number;
+  nbJoues: number;
+  nbGagnes: number;
+  nbPerdus: number;
+  nbForfaits: number;
+  penalites: number;
+  nomEquipe: string;
+};

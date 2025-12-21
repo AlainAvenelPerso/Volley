@@ -1,0 +1,48 @@
+<div
+  (pointerdown)="onSwipeDown($event)"
+  (pointerup)="onSwipeUp($event)"
+  style="touch-action: pan-y"
+>
+<div class='classement'>
+    @let data = Classement$ | async;
+
+@if (data?.length == 0) {
+  <div class="loading">Chargement du classement…</div>
+} @else {
+<table id="classement">
+  <thead>
+    <tr>
+      <!-- <th>Rang</th> -->
+      <th>Équipe</th>
+      <th>Pts</th>
+      <th>J</th>
+      <th>G</th>
+      <th>P</th>
+      <th>GAS</th>
+      <th>GAP</th>
+      <th>F</th>
+      <!-- <th>Pénalités</th> -->
+    </tr>
+  </thead>
+
+  <tbody>
+    @for (classement of Classement$ | async; track classement.nomEquipe; let i = $index) {
+      <tr class="ligne">
+        <!-- <td>{{ i + 1 }}</td> -->
+        <td>{{ i + 1 }}-{{ classement.nomEquipe }}</td>
+        <td>{{ classement.points }}</td>
+        <td>{{ classement.nbJoues }}</td>
+        <td>{{ classement.nbGagnes }}</td>
+        <td>{{ classement.nbPerdus }}</td>
+        <td>{{ classement.gas }}</td>
+        <td>{{ classement.gap }}</td>
+        <td>{{ classement.nbForfaits }}</td>
+        <!-- <td>{{ classement.penalites }}</td> -->
+      </tr>
+    }
+  </tbody>
+</table>
+}
+
+</div>
+

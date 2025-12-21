@@ -101,13 +101,15 @@ export class DetailMatch {
           this.globalService.logDebug(`Input ${idx} changé :`, event.target.value, this.sets, this.iVisibleSlider);
           // Validation du score
           this.bValidScore = true;      // Score valide par défaut
+          this.bMatchGagne = false;     // On remet à faux, on va vérifier
           this.ScoreArray[0] = 0;     // Réinitialisation des scores
           this.ScoreArray[1] = 0;
           //let setsGagne = [0, 0];   // Nombre de sets gagnés par chaque équipe
           for (let i = 0; i < this.iVisibleSlider - 1; i++) {
+            this.globalService.logDebug(`Vérification du set ${i + 1} :`, this.sets[i]);
             if (this.sets[i][0] < 0 || this.sets[i][1] < 0) {       // Score négatif
               this.bValidScore = false;
-              console.log('Score négatif détecté dans set', i + 1);
+              this.globalService.logDebug('Score négatif détecté dans set', i + 1);
             }
             if (this.iVisibleSlider < 5) { // Si moins de 5 sets joués
               if (this.sets[i][0] < 25 && this.sets[i][1] < 25) {              // Pas assez de points
@@ -136,11 +138,11 @@ export class DetailMatch {
           // Vérification du nombre des sets gagnés
           if (this.ScoreArray[0] < 3 && this.ScoreArray[1] < 3) {   // Match pas encore gagné, on peut continuer}
             this.bValidScore = false;
-            this.globalService.logDebug('Match pas encore gagné');
+            this.globalService.logDebug('Match pas encore gagné', this.iVisibleSlider, this.bMatchGagne, this.ScoreArray);
           }
           if (this.ScoreArray[0] == 3 || this.ScoreArray[1] == 3)    // Match déjà gagné
             this.bMatchGagne = true;
-          this.Score = this.ScoreArray[0] + " / " + this.ScoreArray[1];
+          //this.Score = this.ScoreArray[0] + " / " + this.ScoreArray[1];
         });
       });
     });

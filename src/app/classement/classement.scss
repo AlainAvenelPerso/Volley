@@ -1,0 +1,41 @@
+
+.classement {
+    text-align: center;
+    margin: 20px auto;
+    max-width: 800px;
+}
+.ligne {
+    color:#444;
+}
+  table#classement {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 15px;
+  }
+
+  table#classement th,
+  table#classement td {
+    border: 1px solid #999; /* séparateur visible */
+    padding: 8px;
+    text-align: center;
+  }
+
+  /* En-tête */
+  table#classement thead {
+    background-color: #444;
+    color: white;
+  }
+
+  /* Lignes alternées */
+  table#classement tbody tr:nth-child(odd) {
+    background-color: #f0f0f0; /* gris clair */
+  }
+
+  table#classement tbody tr:nth-child(even) {
+    background-color: #ffffff; /* blanc */
+  }
+
+  /* Survol */
+  table#classement tbody tr:hover {
+    background-color: #d0e4ff; /* bleu clair */
+  }

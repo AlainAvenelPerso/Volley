@@ -29,6 +29,10 @@ export const routes: Routes = [
     	{
 		path: 'detailmatch',
 		loadComponent: () => import('./detail-match/detail-match').then(m => m.DetailMatch),
+	}	,
+    	{
+		path: 'classement',
+		loadComponent: () => import('./classement/classement').then(m => m.Classement),
 	}
 	// add other routes here
 ];

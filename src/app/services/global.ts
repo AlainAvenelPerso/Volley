@@ -2,10 +2,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
-import { Categorie, Equipe, Match } from '../models/models';     // On peut les merger! 
+import { Categorie, Equipe, Match, TClassement } from '../models/models';     // On peut les merger! 
 import { AppMessageService } from './app-message.service';
 import { Router } from '@angular/router';
 import { environment } from '../../../src/environments/environment';
+import { Classement } from '../classement/classement';
 
 @Injectable({
   providedIn: 'root'   // disponible partout dans l'app
@@ -36,6 +37,8 @@ export class GlobalService {
   readonly matchs$ = this.matchsSubject.asObservable();
   private scoreMatchSubject = new BehaviorSubject<any>(null);
   readonly scoreMatch$ = this.scoreMatchSubject.asObservable();
+  private classementSubject = new BehaviorSubject<TClassement[]>([]);
+  readonly classement$ = this.classementSubject.asObservable();
 
 
   constructor(
@@ -196,5 +199,18 @@ export class GlobalService {
     this.supabase.enregistrerScoreMatch(Lieu, ED, EE, Score, sets).then(() => {
       console.log('Score enregistré avec succès');
     });
+  }
+
+  chargeClassementCategorie(codeCategorie: number): Promise<any> {
+    return this.supabase.chargeClassementCategorie(codeCategorie).then((data: TClassement[]) => {
+      this.classementSubject.next(data);
+      console.log('Classement chargé dans GlobalService :', data);
+    });
+  }
+
+  
+  getClassementCategorie(): Observable<TClassement[]> {
+    console.log('GlobalService: getClassementCategorie appelé', this.classement$);
+    return this.classement$;
   }
 }
