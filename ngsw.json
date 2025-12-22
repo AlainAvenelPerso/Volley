@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1766429689342,
+  "timestamp": 1766430154412,
   "index": "https://AlainAvenelPerso.github.io/Volley/index.html",
   "assetGroups": [
     {
@@ -40,7 +40,8 @@
       },
       "urls": [
         "https://AlainAvenelPerso.github.io/Volley/assets/LogoUfolep.gif",
-        "https://AlainAvenelPerso.github.io/Volley/assets/favicon.png",
+        "https://AlainAvenelPerso.github.io/Volley/assets/favicon192.png",
+        "https://AlainAvenelPerso.github.io/Volley/assets/favicon512.png",
         "https://AlainAvenelPerso.github.io/Volley/assets/gomme.jpg",
         "https://AlainAvenelPerso.github.io/Volley/assets/gomme.png",
         "https://AlainAvenelPerso.github.io/Volley/icons/icon-128x128.png",
@@ -58,7 +59,8 @@
   "dataGroups": [],
   "hashTable": {
     "https://AlainAvenelPerso.github.io/Volley/assets/LogoUfolep.gif": "e6517aab6fa5c745deebc5261480da3e11baa6c6",
-    "https://AlainAvenelPerso.github.io/Volley/assets/favicon.png": "0877956468ab0d26e62d3fc1e36c427c289a4117",
+    "https://AlainAvenelPerso.github.io/Volley/assets/favicon192.png": "3b47d5f85d10f9875fd79e3cdd635de207b5ec81",
+    "https://AlainAvenelPerso.github.io/Volley/assets/favicon512.png": "0877956468ab0d26e62d3fc1e36c427c289a4117",
     "https://AlainAvenelPerso.github.io/Volley/assets/gomme.jpg": "310dff3f7ad7c82a2fa1169b66da407afc78af5d",
     "https://AlainAvenelPerso.github.io/Volley/assets/gomme.png": "4fbb7eee934800938bf2f207e9313c6d3c9b16a0",
     "https://AlainAvenelPerso.github.io/Volley/chunk-5CZRVI6B.js": "b00a800ffe3fe1447c7d8d81bbf647bc77eeb45a",
