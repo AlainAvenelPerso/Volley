@@ -1,0 +1,109 @@
+{
+  "configVersion": 1,
+  "timestamp": 1766428096415,
+  "index": "https://AlainAvenelPerso.github.io/Volley/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "https://AlainAvenelPerso.github.io/Volley/chunk-5CZRVI6B.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-6KUY5UCQ.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-AOQNRD75.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-AWHZM7SF.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-E4OGQ2LA.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-G6WUXXZV.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-IEUDYHKZ.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-JK5JAHCN.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-K7UPTJTQ.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-RDBFEURV.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-RQ7HWFBO.js",
+        "https://AlainAvenelPerso.github.io/Volley/chunk-VFGPQ5AF.js",
+        "https://AlainAvenelPerso.github.io/Volley/index.html",
+        "https://AlainAvenelPerso.github.io/Volley/main-ZZSWM347.js",
+        "https://AlainAvenelPerso.github.io/Volley/manifest.webmanifest",
+        "https://AlainAvenelPerso.github.io/Volley/polyfills-5CFQRCPP.js",
+        "https://AlainAvenelPerso.github.io/Volley/styles-Q5U3TBJJ.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "https://AlainAvenelPerso.github.io/Volley/assets/LogoUfolep.gif",
+        "https://AlainAvenelPerso.github.io/Volley/assets/favicon.png",
+        "https://AlainAvenelPerso.github.io/Volley/assets/gomme.jpg",
+        "https://AlainAvenelPerso.github.io/Volley/assets/gomme.png",
+        "https://AlainAvenelPerso.github.io/Volley/icons/icon-128x128.png",
+        "https://AlainAvenelPerso.github.io/Volley/icons/icon-144x144.png",
+        "https://AlainAvenelPerso.github.io/Volley/icons/icon-152x152.png",
+        "https://AlainAvenelPerso.github.io/Volley/icons/icon-192x192.png",
+        "https://AlainAvenelPerso.github.io/Volley/icons/icon-384x384.png",
+        "https://AlainAvenelPerso.github.io/Volley/icons/icon-512x512.png",
+        "https://AlainAvenelPerso.github.io/Volley/icons/icon-72x72.png",
+        "https://AlainAvenelPerso.github.io/Volley/icons/icon-96x96.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "https://AlainAvenelPerso.github.io/Volley/assets/LogoUfolep.gif": "e6517aab6fa5c745deebc5261480da3e11baa6c6",
+    "https://AlainAvenelPerso.github.io/Volley/assets/favicon.png": "0877956468ab0d26e62d3fc1e36c427c289a4117",
+    "https://AlainAvenelPerso.github.io/Volley/assets/gomme.jpg": "310dff3f7ad7c82a2fa1169b66da407afc78af5d",
+    "https://AlainAvenelPerso.github.io/Volley/assets/gomme.png": "4fbb7eee934800938bf2f207e9313c6d3c9b16a0",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-5CZRVI6B.js": "b00a800ffe3fe1447c7d8d81bbf647bc77eeb45a",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-6KUY5UCQ.js": "7fb8b074d92412aee6ed88dc928d72a3d727f57e",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-AOQNRD75.js": "3681e161403e4e94be14357c494308e568e51bdd",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-AWHZM7SF.js": "37e6116b38fa792ee7ae8150ad500170d3c2f505",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-E4OGQ2LA.js": "ba8aca430ebe477e7efe2adfc6cc10c1961f7304",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-G6WUXXZV.js": "e79327ad7e0fa23ba2e0e014f8dd814303f5dfe3",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-IEUDYHKZ.js": "2170006c3aee3559d7ec23829e59e5e985a8a88b",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-JK5JAHCN.js": "9a8af229b70ca737bba6c4030e5a115e5dc7ea78",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-K7UPTJTQ.js": "cf87ae80167054a150af360a4c43bcc41f16cc05",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-RDBFEURV.js": "93660bed4320c61c689fd5aee82f04e13dea5a54",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-RQ7HWFBO.js": "432ba23f5bc47c03c0991562d10b5a8075004b74",
+    "https://AlainAvenelPerso.github.io/Volley/chunk-VFGPQ5AF.js": "2570f926d937a73d396fd7dd7c6f78ac530a0778",
+    "https://AlainAvenelPerso.github.io/Volley/icons/icon-128x128.png": "f912963bdc6d5a38d8f1dd0afbaab2ce8d657acb",
+    "https://AlainAvenelPerso.github.io/Volley/icons/icon-144x144.png": "b155fd5f2fd5d2ea7760721063003c4cd95fd783",
+    "https://AlainAvenelPerso.github.io/Volley/icons/icon-152x152.png": "eae6e0f0c8afb8aaae339e2a569b43e9238e5e6c",
+    "https://AlainAvenelPerso.github.io/Volley/icons/icon-192x192.png": "15c4180454633880d98674aa7394656196c91584",
+    "https://AlainAvenelPerso.github.io/Volley/icons/icon-384x384.png": "94a915751ef6c9282df9aea405ad679230631814",
+    "https://AlainAvenelPerso.github.io/Volley/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
+    "https://AlainAvenelPerso.github.io/Volley/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
+    "https://AlainAvenelPerso.github.io/Volley/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
+    "https://AlainAvenelPerso.github.io/Volley/index.html": "40d28530752d7b9d149ffc965c1e6c074e3e5341",
+    "https://AlainAvenelPerso.github.io/Volley/main-ZZSWM347.js": "b5e736a49ade95fdb91c476d8b34bfdb6b2ea694",
+    "https://AlainAvenelPerso.github.io/Volley/manifest.webmanifest": "c7263c5616c4015541dd4a87039c810377ddd5b0",
+    "https://AlainAvenelPerso.github.io/Volley/polyfills-5CFQRCPP.js": "f2241e9a25858f895ce299d15f6f22e849e2fd72",
+    "https://AlainAvenelPerso.github.io/Volley/styles-Q5U3TBJJ.css": "bd993cfd16bc787fd4c69a87aeedf23e9400f3c0"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
