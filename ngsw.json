@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1766428096415,
+  "timestamp": 1766429436629,
   "index": "https://AlainAvenelPerso.github.io/Volley/index.html",
   "assetGroups": [
     {
@@ -24,10 +24,10 @@
         "https://AlainAvenelPerso.github.io/Volley/chunk-RQ7HWFBO.js",
         "https://AlainAvenelPerso.github.io/Volley/chunk-VFGPQ5AF.js",
         "https://AlainAvenelPerso.github.io/Volley/index.html",
-        "https://AlainAvenelPerso.github.io/Volley/main-ZZSWM347.js",
+        "https://AlainAvenelPerso.github.io/Volley/main-5OCP34GQ.js",
         "https://AlainAvenelPerso.github.io/Volley/manifest.webmanifest",
         "https://AlainAvenelPerso.github.io/Volley/polyfills-5CFQRCPP.js",
-        "https://AlainAvenelPerso.github.io/Volley/styles-Q5U3TBJJ.css"
+        "https://AlainAvenelPerso.github.io/Volley/styles-JIZ6YKQO.css"
       ],
       "patterns": []
     },
@@ -81,11 +81,11 @@
     "https://AlainAvenelPerso.github.io/Volley/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
     "https://AlainAvenelPerso.github.io/Volley/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
     "https://AlainAvenelPerso.github.io/Volley/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
-    "https://AlainAvenelPerso.github.io/Volley/index.html": "40d28530752d7b9d149ffc965c1e6c074e3e5341",
-    "https://AlainAvenelPerso.github.io/Volley/main-ZZSWM347.js": "b5e736a49ade95fdb91c476d8b34bfdb6b2ea694",
+    "https://AlainAvenelPerso.github.io/Volley/index.html": "4f9b3f2c8bae0d44e272e4451da2a8b59b28cceb",
+    "https://AlainAvenelPerso.github.io/Volley/main-5OCP34GQ.js": "986cb4473da9d675734750d7bfaf2abd9c5fe790",
     "https://AlainAvenelPerso.github.io/Volley/manifest.webmanifest": "c7263c5616c4015541dd4a87039c810377ddd5b0",
     "https://AlainAvenelPerso.github.io/Volley/polyfills-5CFQRCPP.js": "f2241e9a25858f895ce299d15f6f22e849e2fd72",
-    "https://AlainAvenelPerso.github.io/Volley/styles-Q5U3TBJJ.css": "bd993cfd16bc787fd4c69a87aeedf23e9400f3c0"
+    "https://AlainAvenelPerso.github.io/Volley/styles-JIZ6YKQO.css": "6fa6a6f4d4dcd0c2c6d75a7cd987691cccd0428b"
   },
   "navigationUrls": [
     {
