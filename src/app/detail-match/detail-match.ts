@@ -16,10 +16,13 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
 import { ViewChild } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
 @Component({
   selector: 'app-detail-match',
   imports: [
-    MatSliderModule, FormsModule, MatButtonToggleModule, ReactiveFormsModule, CommonModule
+    MatSliderModule, FormsModule, MatButtonToggleModule, ReactiveFormsModule, CommonModule, MatSnackBarModule
   ],
   templateUrl: './detail-match.html',
   styleUrl: './detail-match.scss',
@@ -55,6 +58,7 @@ export class DetailMatch {
     private globalService: GlobalService,
     private fb: FormBuilder,
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef) {
     const navigation = this.router.currentNavigation();
     const state = navigation?.extras.state as { Lieu: string; CA: string; NA: string, DM: string, SD: number, SE: number };
@@ -78,7 +82,7 @@ export class DetailMatch {
     console.log("paramètres reçus :", this.Lieu, this.codeAdversaire, this.ScoreArray);
 
     if (this.ScoreArray[0] != null) {   // Score déjà saisi
-      this.iVisibleSlider = this.ScoreArray[0] + this.ScoreArray[1] + 1;     
+      this.iVisibleSlider = this.ScoreArray[0] + this.ScoreArray[1] + 1;
       this.globalService.loadScoreMatch(this.Lieu, Number(this.codeAdversaire));
       this.match$ = this.globalService.getScoreMatch();
 
@@ -148,7 +152,13 @@ export class DetailMatch {
     });
   }
 
-
+openSnackBar() {
+  this.snackBar.open('Action effectuée !', 'Fermer', {
+    duration: 2000, // é secondes
+    horizontalPosition: 'right',
+    verticalPosition: 'top'
+  });
+}
   effacerSet() {
     this.iVisibleSlider--;
     this.bMatchGagne = false;     // On peut rejouer des sets
@@ -201,6 +211,14 @@ export class DetailMatch {
           ED = Number(this.codeAdversaire);
         }
         this.globalService.enregistrerScoreMatch(this.Lieu, ED, EE, this.ScoreArray, this.sets);
+
+          this.snackBar.open('Opération réussie', 'OK', {
+      duration: 2000
+    });
+       this.snackBar.open('Opération réussie', 'OK', {
+      duration: 2000
+    });
+
       } else {
         console.log('Score annulée');
       }
@@ -223,7 +241,7 @@ export class DetailMatch {
       this.ScoreArray[1]++;
     }
 
-        // Si score à null, on le met à 0
+    // Si score à null, on le met à 0
     this.ScoreArray[0] = this.ScoreArray[0] ?? 0;
     this.ScoreArray[1] = this.ScoreArray[1] ?? 0;
 

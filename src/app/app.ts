@@ -34,8 +34,9 @@ export class App {
     this.globalService.setSaison(); // Initialiser la saison au démarrage de l'application
 
 
-    //this.router.navigate(['poules']);
-    this.router.navigate(['classement']);
+    this.router.navigate(['']);
+    //this.router.navigate(['classement']);
+    //this.router.navigate(['matchs']);
     //this.router.navigate(['detailmatch/D/1116/Luzinay - 2']);   // Test detail match
     
   }

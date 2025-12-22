@@ -59,4 +59,11 @@ button {
   color: white;                /* texte blanc */
   border: none;                /* pas de bordure */
   border-radius: 6px;          /* coins arrondis */
+  touch-action: none;     // Pour faire swipe sur les boutons
+}
+
+
+    // Ne fonctionnait plus en PWA
+html, body {
+  touch-action: pan-y;
 }
