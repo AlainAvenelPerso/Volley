@@ -1,6 +1,8 @@
 <div class="button-container">
 
-  <button  *ngFor="let cat of equipes$ | async" (click)="this.router.navigate(['EquipeTBD'])">
-    {{ cat.nom }} ({{ cat.nomCategorie }})
+  @for (equipe of equipes$ | async; track equipe.code) {
+  <button (click)="this.router.navigate(['EquipeTBD'])">
+    {{ equipe.nom}} ({{ equipe.nomCategorie }})
   </button>
+  }
 </div>

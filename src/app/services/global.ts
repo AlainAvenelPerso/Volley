@@ -15,13 +15,13 @@ import { Classement } from '../classement/classement';
 export class GlobalService {
 
   private SaisonCourante: string = '';    // Saison en cours
-  private CodeCatégorieInf: number = 0;     // Borne inférieure des catégories pour la Saison Courante
-  private CodeCatégorieSup: number = 0;     // Borne supérieure des catégories pour la Saison Courante
   private equipeConnectee: Equipe = new Equipe(0, '', 0, '');              // Equipe connectée
   private isConnected: boolean = false;         // Statut de connexion
-  private pouleSelected: string = '';        // Poule sélectionnée
+  private pouleSelected: number = 0;        // Poule sélectionnée
   private saisonParsed$ = new BehaviorSubject<{ startYear: string; endYear: string }>({ startYear: '', endYear: '' });
   private Categories: Categorie[] = [];
+  private Equipes: Equipe[] = [];       // Toutes les équipes pour la saison
+  private codeCategorie: number = 0
   readonly saisonParsed = this.saisonParsed$.asObservable();
   private isConnectedSubject = new BehaviorSubject<boolean>(false);
   readonly isConnected$ = this.isConnectedSubject.asObservable();
@@ -103,8 +103,10 @@ export class GlobalService {
 
   loadAllEquipes(): void {
     this.supabase.loadEquipes(this.Categories).then((data: Equipe[]) => {
+      this.Equipes = data;
+      console.log("GlobalService: toutes les équipes chargées par loadAllEquipes", this.Equipes);
       this.equipesAllSubject.next(data);
-      console.log('Equipes chargées dans GlobalService :',  data);
+      console.log('Equipes chargées dans GlobalService :', data);
     });
   }
 
@@ -115,7 +117,7 @@ export class GlobalService {
   loadMatchsEquipe(): void {
     this.supabase.loadMatchsEquipe(this.equipeConnectee.code).then((data: Match[]) => {
       this.matchsSubject.next(data);
-      console.log('Matchs chargés dans GlobalService :',  data);
+      console.log('Matchs chargés dans GlobalService :', data);
     });
   }
 
@@ -124,18 +126,18 @@ export class GlobalService {
   }
 
   loadScoreMatch(Lieu: string, CodeAdversaire: number): void {
-    if (Lieu == "D") 
+    if (Lieu == "D")
       this.supabase.loadScoreMatch(this.equipeConnectee.code, CodeAdversaire).then((data: any) => {
-      console.log('Score chargé dans GlobalService :',  data);
-      this.scoreMatchSubject.next(data);
-      // Traiter les données du score ici si nécessaire
-    });
+        console.log('Score chargé dans GlobalService :', data);
+        this.scoreMatchSubject.next(data);
+        // Traiter les données du score ici si nécessaire
+      });
     else
       this.supabase.loadScoreMatch(CodeAdversaire, this.equipeConnectee.code).then((data: any) => {
-      console.log('Score chargé dans GlobalService :',  data);
-      this.scoreMatchSubject.next(data);
-      // Traiter les données du score ici si nécessaire
-    });
+        console.log('Score chargé dans GlobalService :', data);
+        this.scoreMatchSubject.next(data);
+        // Traiter les données du score ici si nécessaire
+      });
   }
 
   getScoreMatch(): Observable<any> {
@@ -169,48 +171,60 @@ export class GlobalService {
     return this.categories$;
   }
 
+  // Chargement des équipes du club
   loadEquipes(): void {
-    this.supabase.loadEquipesClub(this.equipeConnectee.nom, this.Categories).then((data: Equipe[]) => {
-      this.equipesSubject.next(data);
-      console.log('Equipes chargées dans GlobalService pour :', this.equipeConnectee.nom, data);
-    });
+    this.loadAllEquipes();
+    console.log('Equipes chargées dans GlobalService pour :', this.equipeConnectee.nom);
+
   }
 
   getEquipes(): Observable<Equipe[]> {
     return this.equipes$;
   }
 
-  setPouleSelected(poule: string): void {
+  // On sauvegarde la poule en venant de la page Poule
+  setPouleSelected(poule: number): void {
     this.pouleSelected = poule;
   }
 
-  getPouleSelected(): string {
-    return this.pouleSelected;
+  // On consomme la poule sélectionnée quand on vient de la page poule, on remet la valeur à null après
+  getPouleSelected(): number {
+    const poule = this.pouleSelected;
+    this.pouleSelected = 0;
+    return poule;
   }
 
-  logDebug(...args: any[]) {
-  if (!environment.production) {
-    console.log(...args);
-  }
-  }
-
-  enregistrerScoreMatch(Lieu: string, ED : number, EE : number, Score: number[], sets :number[][]): void {
-    this.logDebug('GlobalService: enregistrerScoreMatch', ED, EE, sets);
-    this.supabase.enregistrerScoreMatch(Lieu, ED, EE, Score, sets).then(() => {
-      console.log('Score enregistré avec succès');
-    });
+  loadEquipesPoule(codeCategorie: number): void {
+    console.log("GlobalService: affiche les équipes déjà chargées", this.Equipes);
+    if (this.Equipes.length == 0) {
+      console.log("GlobalService: rien de charger... on charge toutes les équipes");
+      this.loadAllEquipes();
+    }
   }
 
-  chargeClassementCategorie(codeCategorie: number): Promise<any> {
-    return this.supabase.chargeClassementCategorie(codeCategorie).then((data: TClassement[]) => {
-      this.classementSubject.next(data);
-      console.log('Classement chargé dans GlobalService :', data);
-    });
-  }
+    logDebug(...args: any[]) {
+      if (!environment.production) {
+        console.log(...args);
+      }
+    }
 
-  
-  getClassementCategorie(): Observable<TClassement[]> {
-    console.log('GlobalService: getClassementCategorie appelé', this.classement$);
-    return this.classement$;
+    enregistrerScoreMatch(Lieu: string, ED: number, EE: number, Score: number[], sets: number[][]): void {
+      this.logDebug('GlobalService: enregistrerScoreMatch', ED, EE, sets);
+      this.supabase.enregistrerScoreMatch(Lieu, ED, EE, Score, sets).then(() => {
+        console.log('Score enregistré avec succès');
+      });
+    }
+
+    chargeClassementCategorie(codeCategorie: number): Promise < any > {
+      return this.supabase.chargeClassementCategorie(codeCategorie).then((data: TClassement[]) => {
+        this.classementSubject.next(data);
+        console.log('Classement chargé dans GlobalService :', data);
+      });
+    }
+
+
+    getClassementCategorie(): Observable < TClassement[] > {
+      console.log('GlobalService: getClassementCategorie appelé', this.classement$);
+      return this.classement$;
+    }
   }
-}

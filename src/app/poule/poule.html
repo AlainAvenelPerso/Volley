@@ -1,6 +1,10 @@
 <div class="button-container">
 
-  <button  *ngFor="let cat of categories$ | async" (click)="goEquipes(cat)" class="category-button">
+
+
+  @for (cat of categories$ | async; track cat.codeCategorie) {
+  <button (click)="goEquipes(cat)" class="category-button">
     {{ cat.nomCategorie }}
   </button>
+  }
 </div>

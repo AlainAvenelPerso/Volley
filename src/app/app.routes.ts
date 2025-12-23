@@ -33,6 +33,10 @@ export const routes: Routes = [
     	{
 		path: 'classement',
 		loadComponent: () => import('./classement/classement').then(m => m.Classement),
+	},
+    	{
+		path: 'info-equipe',
+		loadComponent: () => import('./info-equipe/info-equipe').then(m => m.InfoEquipe),
 	}
 	// add other routes here
 ];
