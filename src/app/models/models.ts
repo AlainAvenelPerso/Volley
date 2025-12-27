@@ -82,3 +82,26 @@ export type TClassement = {
   penalites: number;
   nomEquipe: string;
 };
+
+export type Joueur = {
+Nom: string;
+Prenom: string;
+Mail1: string;
+TelPortable: string;
+};
+
+export type Gymnase = {
+  Nom_Gymnase: string;
+  Adresse: string;
+  Commune: string;
+  X: number;
+  Y: number;
+}
+
+export type InfosEquipe = {
+  Nom_Equipe: string;
+  Jour_Match: string;
+  Heures_Match: string;
+  capitaine: Joueur;
+  gymnase: Gymnase;
+}

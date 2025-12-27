@@ -26,17 +26,16 @@ export class IdentificationComponent {
     private globalService: GlobalService,
     private router: Router
   ) {
-    
-   }
 
-    ngOnInit(): void {
-      if (this.globalService.getEquipeConnectee().code == 0)
-        {       // load teams
-        this.globalService.loadAllEquipes();
-        this.equipesAll$ = this.globalService.getAllEquipes();
-        console.log("Equipes ", this.equipesAll$);
-        }
-     }
+  }
+
+  ngOnInit(): void {
+    if (this.globalService.getEquipeConnectee().code == 0) {       // load teams
+      this.globalService.loadAllEquipes();
+      this.equipesAll$ = this.globalService.getAllEquipes();
+      console.log("Equipes ", this.equipesAll$);
+    }
+  }
 
   async loginWithSupabase(): Promise<void> {
     if (!this.username || !this.password) {
@@ -45,13 +44,12 @@ export class IdentificationComponent {
     }
 
 
-      if (this.globalService.loginWithUserAndPassword(this.username, this.password) != null)
-      {
-        this.isConnected = true;
-        this.appMessage.show(this.username, 0);
-      }
+    if (this.globalService.loginWithUserAndPassword(this.username, this.password) != null) {
+      this.isConnected = true;
+      this.appMessage.show(this.username, 0);
+    }
   }
-  
+
   async disconnect() {
     console.log('Déconnexion de', this.username);
     this.isConnected = false;

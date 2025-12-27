@@ -3,8 +3,8 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from '../../environments/environment';
 import * as crypto from 'crypto-js';
 import { min } from 'rxjs';
-import { Categorie, Equipe } from '../models/models';
-import type { TClassement } from '../models/models';
+import { Categorie, Equipe, InfosEquipe, Joueur } from '../models/models';
+import type { Gymnase, TClassement } from '../models/models';
 
 
 const POINT_GAGNANT = 3;      // 3 points pour une victoire
@@ -370,6 +370,78 @@ export class SupabaseService {
     }
   }
 
+  async informationEquipe(codeEquipe: number): Promise<InfosEquipe | null> {
+    try {
+      console.log('Récupération des informations pour l\'équipe', codeEquipe);
+
+      const { data, error } = await this.supabase
+        .from('Equipes')
+        .select(`
+            Nom_Equipe,
+            Jour_Match,
+            Heures_Match,
+            Gymnases (
+              Nom_Gymnase,
+              Adresse,
+              Commune,
+              X,
+              Y
+            ),
+            Joueurs (
+              Nom,
+              Prenom,
+              TelPortable,
+              Mail1
+            )
+          `)
+        .eq('Code_Equipe', codeEquipe)
+        .single();
+
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No rows returned - invalid credentials
+          throw new Error('Identifiant ou mot de passe incorrect.');
+        }
+        throw new Error(error.message);
+      }
+
+      if (data) {
+        const capitaine = data.Joueurs as unknown as Joueur;
+        const gymnase = data.Gymnases as unknown as Gymnase;
+        console.log('InfoEquipe', data, data.Joueurs, data.Gymnases, capitaine, gymnase);
+
+        const infoEquipe: InfosEquipe = {
+          Nom_Equipe : data.Nom_Equipe,
+          Jour_Match : data.Jour_Match,
+          Heures_Match : data.Heures_Match,
+          capitaine: {
+            Nom: capitaine.Nom,
+            Prenom: capitaine.Prenom,
+            Mail1: capitaine.Mail1,
+            TelPortable: capitaine.TelPortable
+          },
+          gymnase: {
+            Nom_Gymnase: gymnase.Nom_Gymnase,
+            Adresse: gymnase.Adresse,
+            Commune: gymnase.Commune,
+            X: gymnase.X,
+            Y: gymnase.Y
+          }
+        };
+
+        return infoEquipe;
+      }
+
+
+
+      throw new Error('Identifiant ou mot de passe incorrect.');
+    } catch (error: any) {
+      console.error('Erreur Supabase:', error.message);
+      throw error;
+    }
+  }
+
   async chargeClassementCategorie(CodeCategorie: number) {
     try {
       console.log('Chargement du classement pour la catégorie', CodeCategorie);
@@ -521,7 +593,7 @@ export class SupabaseService {
     L2: "D" | "E",
     setDeltaPoints: (d: number) => void,
     setForfait: (f: "D" | "E" | "") => void
-  ): "D" | "E" | null{
+  ): "D" | "E" | null {
     //console.log('chercheGagnantPoints appelé avec match:', match, L1, L2);
     if (match.Sets_Domicile === null)
       return null; // Pas de score, pas de gagnant
