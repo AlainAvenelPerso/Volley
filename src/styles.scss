@@ -38,17 +38,16 @@ main::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.32);
 }
 
- .button-container {
+.button-container {
   display: flex;             /* active flexbox */
   flex-direction: column;    /* empile les boutons verticalement */
   justify-content: center;   /* centre verticalement */
-  //align-items: center;       /* centre horizontalement */
+  //align-items: center;       /* centre horizontalement */   => Ne pas mettre sinon les boutons n'ont pas la même taille
   //height: 100%;              /* prend toute la hauteur de la fenêtre */
   gap: 30px;                 /* espace entre les boutons */
   padding-left: 40px;
   padding-right: 40px;
 }
-
 
 button {
  // width: 200px;
@@ -66,4 +65,21 @@ button {
     // Ne fonctionnait plus en PWA
 html, body {
   touch-action: pan-y;
+}
+
+  // Titre d'une page
+
+.Titre {
+  font-size: 35px;
+  margin: 0;
+}
+
+.SousTitre {
+  font-size: 25px;
+   margin: 0;
+}
+
+.SurchargeDiv {
+  align-items: center;
+  gap: 5px;
 }

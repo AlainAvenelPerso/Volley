@@ -1,28 +1,28 @@
-  <!-- Hamburger menu (CSS-only) -->
-  <input id="menu-toggle" class="menu-toggle" type="checkbox" aria-hidden="true" />
-  <label for="menu-toggle" class="burger" aria-label="Open menu">
-    <span></span>
-    <span></span>
-    <span></span>
-  </label>
+<!-- Hamburger menu (CSS-only) -->
+<input id="menu-toggle" class="menu-toggle" type="checkbox" aria-hidden="true" />
+<label for="menu-toggle" class="burger" aria-label="Open menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</label>
 
-  <nav class="side-menu" aria-hidden="true">
-    <ul>
-      <li><a routerLink="/" (click)="closeMenu()">Accueil</a></li>
-        @if (isConnected$ | async) {
-          <li><a routerLink="/matchs" (click)="closeMenu()">Matchs</a></li>
-          <li><a routerLink="/equipes" (click)="closeMenu()">Equipes du club</a></li>
-          <li><a routerLink="/connexion" (click)="disconnect(); closeMenu()">Déconnexion</a></li>
-        } @else {
-          <li><a routerLink="/connexion" (click)="closeMenu()">Connexion</a></li>
-        }
-    </ul>
-  </nav>
+<nav class="side-menu" aria-hidden="true">
+  <ul>
+    <li><a routerLink="/" (click)="closeMenu()">Accueil</a></li>
+    @if (isConnected$ | async) {
+    <li><a routerLink="/matchs" (click)="closeMenu()">Matchs</a></li>
+    <li><a routerLink="/equipes" (click)="closeMenu()">Equipes du club</a></li>
+    <li><a routerLink="/connexion" (click)="disconnect(); closeMenu()">Déconnexion</a></li>
+    } @else {
+    <li><a routerLink="/connexion" (click)="closeMenu()">Connexion</a></li>
+    }
+  </ul>
+</nav>
 
-  <label for="menu-toggle" class="menu-overlay" aria-hidden="true"></label>
+<label for="menu-toggle" class="menu-overlay" aria-hidden="true"></label>
 
-  <!-- Fixed header (moved outside main so it behaves like the footer) -->
-   <div class="app-container">
+<!-- Fixed header (moved outside main so it behaves like the footer) -->
+<div class="app-container">
   <header class="main-header" role="banner">
     <div class="header-left">
       <a routerLink="/" (click)="closeMenu()" class="logo-link" aria-label="Accueil">
@@ -38,7 +38,7 @@
   </header>
 
   <main>
-      <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
   </main>
 
   <footer id="app-footer" class="app-footer" [class.visible]="(message$ | async)" aria-live="polite" role="status">

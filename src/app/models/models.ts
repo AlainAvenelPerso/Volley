@@ -100,8 +100,17 @@ export type Gymnase = {
 
 export type InfosEquipe = {
   Nom_Equipe: string;
+  Code_Categorie: number;
   Jour_Match: string;
   Heures_Match: string;
   capitaine: Joueur;
   gymnase: Gymnase;
+}
+
+export type Resultat = {
+  Nom_Equipe: string;
+  Equipe_Domicile: number;
+  Equipe_Exterieure: number;
+  Sets_Domicile: number;
+  Sets_Exterieur: number;
 }

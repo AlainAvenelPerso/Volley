@@ -81,7 +81,7 @@ export class DetailMatch {
 
     console.log("paramètres reçus :", this.Lieu, this.codeAdversaire, this.ScoreArray);
 
-    if (this.ScoreArray[0] != null) {   // Score déjà saisi
+    if (this.ScoreArray[0] != null) {   // Score déjà saisi mais on ne reçoit que le score
       this.iVisibleSlider = this.ScoreArray[0] + this.ScoreArray[1] + 1;
       this.globalService.loadScoreMatch(this.Lieu, Number(this.codeAdversaire));
       this.match$ = this.globalService.getScoreMatch();

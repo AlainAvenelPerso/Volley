@@ -7,7 +7,7 @@ import { AppMessageService } from './app-message.service';
 import { Router } from '@angular/router';
 import { environment } from '../../../src/environments/environment';
 import { Classement } from '../classement/classement';
-
+import { Resultat } from '../models/models';
 @Injectable({
   providedIn: 'root'   // disponible partout dans l'app
 })
@@ -40,7 +40,8 @@ export class GlobalService {
   readonly classement$ = this.classementSubject.asObservable();
   private informationEquipeSubject = new BehaviorSubject<InfosEquipe | null>(null);
   readonly informationEquipe$ = this.informationEquipeSubject.asObservable();
-
+  private resultatsSubject = new BehaviorSubject<Resultat[]>([]);
+  readonly resultats$ = this.resultatsSubject.asObservable();
 
   constructor(
     private supabase: SupabaseService, private appMessage: AppMessageService, private router: Router
@@ -248,4 +249,14 @@ export class GlobalService {
     return this.informationEquipe$;
   }
 
+  loadResultats(codeCategorie: number){
+    this.supabase.loadResultats(codeCategorie).then((data: Resultat[]) => {
+      this.resultatsSubject.next(data);
+      console.log('Résultats chargés dans GlobalService :', data);
+    });
+  }
+
+  getResultats(): Observable<Resultat[]> {
+    return this.resultats$;
+  }
 }

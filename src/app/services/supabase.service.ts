@@ -380,6 +380,7 @@ export class SupabaseService {
             Nom_Equipe,
             Jour_Match,
             Heures_Match,
+            Code_Categorie,
             Gymnases (
               Nom_Gymnase,
               Adresse,
@@ -412,9 +413,10 @@ export class SupabaseService {
         console.log('InfoEquipe', data, data.Joueurs, data.Gymnases, capitaine, gymnase);
 
         const infoEquipe: InfosEquipe = {
-          Nom_Equipe : data.Nom_Equipe,
-          Jour_Match : data.Jour_Match,
-          Heures_Match : data.Heures_Match,
+          Nom_Equipe: data.Nom_Equipe,
+          Jour_Match: data.Jour_Match,
+          Heures_Match: data.Heures_Match,
+          Code_Categorie: data.Code_Categorie,
           capitaine: {
             Nom: capitaine.Nom,
             Prenom: capitaine.Prenom,
@@ -578,6 +580,39 @@ export class SupabaseService {
         console.log('Tableau du classement trié :', TabEquipes);
 
         return TabEquipes;
+      }
+
+      throw new Error('Identifiant ou mot de passe incorrect.');
+    } catch (error: any) {
+      console.error('Erreur Supabase:', error.message);
+      throw error;
+    }
+  }
+
+  async loadResultats(categorie: number) {
+    try {
+      console.log('Récupération des résultats pour la catégorie', categorie);
+
+      // Query the 'Equipes' table for matching username and password hash
+      const { data, error } = await this.supabase
+        .from('MatchsCategorie')
+        .select("Nom_Equipe, Equipe_Domicile, Equipe_Exterieure, Sets_Domicile, Sets_Exterieur"
+        )
+        .eq('Code_Categorie', categorie)
+        .order('Equipe_Domicile', { ascending: true })
+        .order('Equipe_Exterieure', { ascending: true });
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No rows returned - invalid credentials
+          throw new Error('Identifiant ou mot de passe incorrect.');
+        }
+        throw new Error(error.message);
+      }
+
+      if (data) {
+        console.log('Matchs récupérés pour la catégorie', categorie, data);
+        return data;
       }
 
       throw new Error('Identifiant ou mot de passe incorrect.');

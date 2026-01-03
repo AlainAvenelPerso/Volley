@@ -1,18 +1,26 @@
-<div class="button-container">
-    <h1>{{ InfoEquipe?.Nom_Equipe }}</h1>
-    <h3> {{ InfoEquipe?.Jour_Match }} {{ InfoEquipe?.Heures_Match }} </h3>
+<div class="button-container SurchargeDiv">
+    <h1 class="Titre">{{ InfoEquipe?.Nom_Equipe }}</h1>
+    <h2 class="SousTitre"> {{ InfoEquipe?.Jour_Match }} {{ InfoEquipe?.Heures_Match }} </h2>
+    @if (sameCategory) {
     <div class="capitaine-info">
-        Capitaine : {{ InfoEquipe?.capitaine?.Prenom }} {{ InfoEquipe?.capitaine?.Nom }}
+        {{ InfoEquipe?.capitaine?.Prenom }} {{ InfoEquipe?.capitaine?.Nom }}
         &nbsp;
-        <a href="mailto:{{ InfoEquipe?.capitaine?.Mail1 }}">{{ InfoEquipe?.capitaine?.Mail1 }}</a>
+        <img class="icone-mail" (click)="openMail()" src="assets/send-mail.png">
+
+        <!-- <a href="mailto:{{ InfoEquipe?.capitaine?.Mail1 }}">{{ InfoEquipe?.capitaine?.Mail1 }}</a> -->
         <button (click)="callNumber()">{{ InfoEquipe?.capitaine?.TelPortable }}</button>
     </div>
+    }
 
-
-    Gymnase : {{ InfoEquipe?.gymnase?.Nom_Gymnase }} : {{ InfoEquipe?.gymnase?.Adresse }}, {{
-    InfoEquipe?.gymnase?.Commune }} <br>
+    <div style="text-align:center;">
+        <B>Gymnase :</B> 
+        @if (InfoEquipe?.gymnase?.Nom_Gymnase) {
+            {{ InfoEquipe?.gymnase?.Nom_Gymnase }} : 
+        }
+        {{ InfoEquipe?.gymnase?.Adresse }}, {{InfoEquipe?.gymnase?.Commune }} <br>
+    </div>
     <div id="map"></div>
 
 </div>
 
-// Pb se retaille et le titre n'est plus visible
+<!-- Pb se retaille et le titre n'est plus visible -->

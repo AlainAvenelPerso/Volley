@@ -16,17 +16,18 @@ export class InfoEquipe implements AfterViewInit {
   private equipeCode: number = 0;
   //infoEquipe$!: Observable<InfosEquipe | null>;
   InfoEquipe: InfosEquipe | null = null;
+  sameCategory: boolean = false;          // Est-ce la même catégorie que l'équipe connectée?
 
   constructor(private globalService: GlobalService, public router: Router) {
-    const state = history.state as { codeEquipe: number };
+    const state = history.state as { codeEquipe: number, codeCategorie: number };
 
-    console.log('InfoEquipe initialized with CodeEquipe:', state?.codeEquipe);
+    console.log('InfoEquipe initialized with CodeEquipe:', state?.codeEquipe, state?.codeCategorie);
     this.equipeCode = state.codeEquipe;
   }
 
-    ngOnInit(): void {
+  ngOnInit(): void {
 
-    if (this.equipeCode != 0)     // On va afficher les équipes d'une poule
+    if (this.equipeCode != 0)     // On va afficher les infos d'une équipe
     {
       this.globalService.logDebug(this.constructor.name, "chargement des équipes pour la poule ", this.equipeCode);
       this.globalService.informationEquipe(this.equipeCode);
@@ -36,12 +37,19 @@ export class InfoEquipe implements AfterViewInit {
         const center: L.LatLngExpression = [this.InfoEquipe?.gymnase.Y || 0, this.InfoEquipe?.gymnase.X || 0];
         this.map.setView(center, 13);
         const marker = L.marker(center).addTo(this.map);
-        setTimeout(() => {
-  this.map.invalidateSize();
-}, 50);
 
-      } );
-     
+        if (this.InfoEquipe?.Code_Categorie == this.globalService.getEquipeConnectee().codeCategorie)
+          this.sameCategory = true;
+        else
+          this.sameCategory = false;
+
+
+        setTimeout(() => {
+          this.map.invalidateSize();
+        }, 50);
+
+      });
+
     }
   }
 
@@ -68,5 +76,9 @@ export class InfoEquipe implements AfterViewInit {
     // // Exemple de marqueur
     // const marker = L.marker(center).addTo(this.map);
     // marker.bindPopup('Ici, c’est le centre de la carte.').openPopup();
+  }
+
+  openMail() {
+    window.location.href = 'mailto:' + this.InfoEquipe?.capitaine?.Mail1;
   }
 }

@@ -2,9 +2,9 @@
 
   @for (equipe of equipes$ | async; track equipe.code) {
   <button (click)="this.router.navigate(['info-equipe'],
-          { state: {  codeEquipe: equipe.code } }
+          { state: {  codeEquipe: equipe.code, codeCategorie: equipe.codeCategorie} }
   )">
-    {{ equipe.nom}}
+    {{ equipe.nom }}
     @if (this.pouleSelectionnee == 0) {
      ({{ equipe.nomCategorie }})
     }

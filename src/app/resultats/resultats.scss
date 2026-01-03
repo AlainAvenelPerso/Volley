@@ -1,0 +1,62 @@
+.tableau-resultats {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: #000;
+  table-layout: fixed; /* indispensable */
+
+  th, td {
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Colonne Équipe : largeur minimale contrôlée */
+  th:first-child,
+  td:first-child {
+    width: 120px;      /* largeur minimale */
+    max-width: 150px;  /* empêche d'être énorme */
+    min-width: 100px;  /* empêche d'être trop petite */
+    text-align: left;
+  }
+
+  /* Colonnes de scores : largeur minimale identique */
+  .score-cell {
+    width: 1%;         /* force la largeur minimale */
+    min-width: 45px;   /* lisible */
+    text-align: center;
+    // padding-left: 0;
+    // padding-right: 0;
+  }
+
+  /* Zébrage */
+  tbody tr:nth-child(odd) {
+    background-color: #fafafa;
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: #eaeaea;
+  }
+
+  /* Hover */
+  tbody tr:hover {
+    background-color: #d6e4ff;
+    transition: 0.2s;
+  }
+
+  /* Diagonale grisée */
+  td.diagonale {
+    background-color: #ccc !important;
+    color: #666;
+    font-style: italic;
+  }
+}
+
+/* Header forcé si thème global sombre */
+:host ::ng-deep .tableau-resultats thead tr {
+  background-color: #f2f2f2 !important;
+  color: #000 !important;
+}

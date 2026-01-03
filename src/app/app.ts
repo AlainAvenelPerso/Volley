@@ -34,7 +34,9 @@ export class App {
     this.globalService.setSaison(); // Initialiser la saison au démarrage de l'application
 
 
-    this.router.navigate(['poules']);
+
+    //this.router.navigate(['poules']);
+    this.router.navigate(['resultats']);
     //this.router.navigate(['info-equipe']);
     //this.router.navigate(['classement']);
     //this.router.navigate(['matchs']);

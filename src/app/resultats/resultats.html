@@ -1,0 +1,36 @@
+<!-- {{ resultats$ | async }} -->
+<table class="tableau-resultats">
+
+  <thead>
+    <tr>
+      <th>Équipe</th>
+
+      @for (col of colonnes; track col) {
+        <th class="score-cell">{{ col }}</th>
+      }
+    </tr>
+  </thead>
+
+  <tbody>
+
+@for (ligne of lignesTableau; let i = $index; track ligne.Nom_Equipe) {
+
+  <tr>
+    <td>{{ ligne.Nom_Equipe }}</td>
+
+    @for (col of colonnes; track col) {
+      <td class="score-cell" [class.diagonale]="col === i + 1">
+        @if (col !== i + 1) {
+          {{ ligne.valeurs[col] ?? "" }}
+        }
+      </td>
+    }
+
+  </tr>
+
+}
+
+
+  </tbody>
+
+</table>
