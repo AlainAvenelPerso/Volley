@@ -1,39 +1,52 @@
-<!-- {{ resultats$ | async }} -->
-  <div class="tableau-wrapper">
+<div class="tableau-wrapper">
 
-<table class="tableau-resultats">
+  <table class="tableau-resultats">
 
-  <thead>
-    <tr>
-      <th>Équipe</th>
+    <thead>
+      <tr>
+        <th class="col-equipe">Équipe</th>
 
-      @for (col of colonnes; track col) {
-        <th class="score-cell">{{ col }}</th>
-      }
-    </tr>
-  </thead>
-
-  <tbody>
-
-@for (ligne of lignesTableau; let i = $index; track ligne.Nom_Equipe) {
-
-  <tr>
-    <td class="col-equipe">{{ ligne.Nom_Equipe }}</td>
-
-    @for (col of colonnes; track col) {
-      <td class="score-cell" [class.diagonale]="col === i + 1">
-        @if (col !== i + 1) {
-          {{ ligne.valeurs[col] ?? "" }}
+        @for (col of colonnes; track col) {
+          <th class="score-cell">{{ col }}</th>
         }
-      </td>
-    }
+      </tr>
+    </thead>
 
-  </tr>
+    <tbody>
 
-}
+      @for (ligne of lignesTableau; let i = $index; track ligne.Nom_Equipe) {
 
+        <tr>
 
-  </tbody>
+          <!-- Colonne équipe sticky -->
+          <td class="col-equipe">
+            {{ ligne.Nom_Equipe }}
+          </td>
 
-</table>
+          <!-- Colonnes de scores -->
+          @for (col of colonnes; track col) {
+
+            @let isClickable = (col !== i + 1 && ligne.valeurs[col]);
+
+            <td class="score-cell"
+                [class.diagonale]="col === i + 1"
+                [class.clickable]="isClickable"
+                (click)="isClickable ? onCellClick(ligne.index, col) : null">
+
+              @if (isClickable) {
+                {{ ligne.valeurs[col] }}
+              }
+
+            </td>
+
+          }
+
+        </tr>
+
+      }
+
+    </tbody>
+
+  </table>
+
 </div>

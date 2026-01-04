@@ -2,18 +2,18 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
-import { Categorie, Equipe, Match, TClassement, InfosEquipe } from '../models/models';     // On peut les merger! 
+import { Categorie, Equipe, Match, TClassement, InfosEquipe } from '../../models/models';     // On peut les merger! 
 import { AppMessageService } from './app-message.service';
 import { Router } from '@angular/router';
 import { environment } from '../../../src/environments/environment';
 import { Classement } from '../classement/classement';
-import { Resultat } from '../models/models';
+import { Resultat } from '../../models/models';
 @Injectable({
   providedIn: 'root'   // disponible partout dans l'app
 })
 
 export class GlobalService {
-
+  public swipeThreshold: number = 40; // sensibilité (px) pour les swipes
   private SaisonCourante: string = '';    // Saison en cours
   private equipeConnectee: Equipe = new Equipe(0, '', 0, '');              // Equipe connectée
   private isConnected: boolean = false;         // Statut de connexion

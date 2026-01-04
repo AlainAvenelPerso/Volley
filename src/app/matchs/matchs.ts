@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { GlobalService } from '../services/global';
 import { Router } from '@angular/router';
-import { Match } from '../models/models';
+import { Match } from '../../models/models';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AppMessageService } from '../services/app-message.service';
@@ -17,9 +17,11 @@ import { HostListener } from '@angular/core';
 export class Matchs {
   matchs$!: Observable<Match[]>;
   startX = 0;
-  swipeThreshold = 40; // sensibilité (px)
+  swipeThreshold: number; // sensibilité (px)
 
-  constructor(public router: Router, private globalService: GlobalService) { }
+  constructor(public router: Router, private globalService: GlobalService) {
+    this.swipeThreshold = this.globalService.swipeThreshold;    // récupérer la sensibilité depuis le service global
+  }
 
   ngOnInit(): void {
     if (this.globalService.getEquipeConnectee().code !== 0) {       // load teams for the club
@@ -43,11 +45,16 @@ export class Matchs {
 
   @HostListener('window:pointerup', ['$event'])
   onPointerUp(event: PointerEvent) {
-    const deltaX = Math.abs(event.clientX - this.startX);
+    //const deltaX = Math.abs(event.clientX - this.startX);
+    const deltaX = event.clientX - this.startX;
     console.log("Pointer up detected", deltaX);
     if (deltaX > this.swipeThreshold) {
       console.log('Swipe gauche détecté');
       this.router.navigate(['/classement']);
+    }
+    if (deltaX < -this.swipeThreshold) {
+      console.log('Swipe droite détecté');
+      this.router.navigate(['/resultats']);
     }
   }
 

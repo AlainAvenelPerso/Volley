@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { GlobalService } from '../services/global';
 import { Router } from '@angular/router';
-import { Equipe } from '../models/models';
+import { Equipe } from '../../models/models';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AppMessageService } from '../services/app-message.service';

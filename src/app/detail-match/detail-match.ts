@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { GlobalService } from '../services/global';
-import { Score } from '../models/models';
+import { Score } from '../../models/models';
 import { Observable } from 'rxjs';
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
 import { MatSliderModule, } from '@angular/material/slider';
@@ -61,7 +61,10 @@ export class DetailMatch {
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef) {
     const navigation = this.router.currentNavigation();
-    const state = navigation?.extras.state as { Lieu: string; CA: string; NA: string, DM: string, SD: number, SE: number };
+    const state = navigation?.extras.state as { Lieu: string; CA: string; NA: string, DM: string, SD: number, SE: number 
+        ,  ED: number, EE: number // Valeurs venant de Resultats 
+
+    };
     console.log('State reçu dans le constructeur :', state);
     this.nomAdversaire = state.NA;
     this.Lieu = state.Lieu;

@@ -3,8 +3,8 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from '../../environments/environment';
 import * as crypto from 'crypto-js';
 import { min } from 'rxjs';
-import { Categorie, Equipe, InfosEquipe, Joueur } from '../models/models';
-import type { Gymnase, TClassement } from '../models/models';
+import { Categorie, Equipe, InfosEquipe, Joueur } from '../../models/models';
+import type { Gymnase, TClassement } from '../../models/models';
 
 
 const POINT_GAGNANT = 3;      // 3 points pour une victoire

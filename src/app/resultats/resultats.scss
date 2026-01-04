@@ -1,17 +1,15 @@
-/* Conteneur scrollable */
+/* Wrapper scrollable */
 .tableau-wrapper {
   width: 100%;
   overflow-x: auto;
 }
 
-/* Le tableau prend exactement la largeur nécessaire */
+/* Tableau */
 .tableau-resultats {
   width: max-content;
   border-collapse: collapse;
-  table-layout: fixed; /* stabilise les colonnes */
   font-size: 14px;
-  margin: 0 auto; /* centre si possible */
-  color: #000!important;
+  margin: 0 auto;
 }
 
 /* Cellules générales */
@@ -20,32 +18,11 @@
   padding: 6px 8px;
   border: 1px solid #ddd;
   text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: #000;
+  background-color: #fff; /* évite le noir sur noir */
 }
 
-/* Colonne Équipe : doit afficher tout le texte */
-.tableau-resultats th:first-child,
-.tableau-resultats td:first-child {
-  white-space: nowrap;   /* ne jamais couper */
-  width: auto;           /* largeur naturelle */
-  max-width: none;       /* pas de limite */
-  overflow: visible;     /* pas de coupure */
-  text-overflow: unset;  /* pas de "..." */
-  font-weight: 600;
-  text-align: left;
-}
-
-/* Colonnes de scores : largeur minimale */
-.tableau-resultats .score-cell {
-  min-width: 24px;       /* largeur mini */
-  white-space: nowrap;
-  text-align: center;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-/* Zébrage */
+/* Alternance de lignes */
 .tableau-resultats tbody tr:nth-child(odd) {
   background-color: #fafafa;
 }
@@ -54,18 +31,56 @@
   background-color: #eaeaea;
 }
 
-/* Hover */
-.tableau-resultats tbody tr:hover {
-  background-color: #d6e4ff;
-  transition: 0.2s;
+/* Surbrillance au survol */
+.tableau-resultats tbody tr:hover td:not(.diagonale):not(.col-equipe) {
+  background-color: #d6eaff !important;
 }
 
+/* Colonne équipe sticky */
+.col-equipe {
+  position: sticky;
+  left: 0;
+  background-color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 5;
+  text-align: left;
+}
+
+/* Header simple (non sticky pour éviter les bugs de scroll) */
 .tableau-resultats thead tr {
-  background-color: #f2f2f2 !important;
-  color: #000 !important;
+  background-color: #f2f2f2;
+  font-weight: 600;
 }
 
-.tableau-resultats td.diagonale {
-  background-color: #c4c4c4;
-  color: #444;
+/* Colonnes de scores */
+.score-cell {
+  min-width: 24px;
+  white-space: nowrap;
+  padding-left: 0;
+  padding-right: 0;
+  background-color: #fff;
+  color: #000;
 }
+
+/* Diagonale grisée */
+.tableau-resultats td.diagonale {
+  background-color: #d0d0d0 !important;
+  color: #555;
+  font-style: italic;
+}
+
+.tableau-resultats tr:hover td.diagonale {
+  background-color: #c4c4c4 !important;
+}
+
+/* Cellules cliquables */
+.tableau-resultats td.clickable {
+  cursor: pointer;
+  background-color: #f0f8ff;
+}
+
+.tableau-resultats td.clickable:hover {
+  background-color: #d6eaff;
+}
+

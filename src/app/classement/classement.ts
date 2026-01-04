@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { GlobalService } from '../services/global';
 import { Observable } from 'rxjs';
-import { TClassement } from '../models/models';
+import { TClassement } from '../../models/models';
 import { CommonModule } from '@angular/common';
 import { Matchs } from '../matchs/matchs';
 import { Router, RouterOutlet } from '@angular/router';
@@ -17,9 +17,9 @@ export class Classement {
   Classement$!: Observable<TClassement[]>;
   classement: TClassement[] = [];
   startX = 0;
-  swipeThreshold = 40; // sensibilité (px)
+  swipeThreshold: number; // sensibilité (px)
   constructor(private globalService: GlobalService, private router: Router) {
-
+    this.swipeThreshold = this.globalService.swipeThreshold;    // récupérer la sensibilité depuis le service global
   }
 
   ngOnInit(): void {
@@ -41,10 +41,14 @@ export class Classement {
 
   @HostListener('window:pointerup', ['$event'])
   onPointerUp(event: PointerEvent) {
-    const deltaX = Math.abs(event.clientX - this.startX);
+    const deltaX = event.clientX - this.startX;
     console.log("Pointer up detected", deltaX);
     if (deltaX > this.swipeThreshold) {
       console.log('Swipe gauche détecté');
+      this.router.navigate(['/resultats']);
+    }
+    if (deltaX < -this.swipeThreshold) {
+      console.log('Swipe droite détecté');
       this.router.navigate(['/matchs']);
     }
   }

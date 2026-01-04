@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { GlobalService } from '../services/global';
-import { Categorie } from '../models/models';
+import { Categorie } from '../../models/models';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 

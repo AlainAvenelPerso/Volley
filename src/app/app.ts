@@ -6,7 +6,7 @@ import { AppMessageService } from './services/app-message.service';
 import { AuthService } from './services/auth.service';
 import { GlobalService } from './services/global';
 import { SupabaseService } from './services/supabase.service';
-import { Equipe } from './models/models';
+import { Equipe } from '../models/models';
 import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
@@ -36,7 +36,7 @@ export class App {
 
 
     //this.router.navigate(['poules']);
-    this.router.navigate(['resultats']);
+    //this.router.navigate(['resultats']);
     //this.router.navigate(['info-equipe']);
     //this.router.navigate(['classement']);
     //this.router.navigate(['matchs']);

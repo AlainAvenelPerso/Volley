@@ -4,7 +4,7 @@ import { AppMessageService } from '../services/app-message.service';
 import { GlobalService } from '../services/global';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Equipe } from '../models/models';
+import { Equipe } from '../../models/models';
 import { CommonModule } from '@angular/common';
 
 @Component({

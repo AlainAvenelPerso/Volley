@@ -1,7 +1,7 @@
 <div class="button-container">
   @for (match of matchs$ | async; track trackByComposite(match.Lieu, match.CodeAdversaire)) {
   <button
-      (click)="this.router.navigate(['detailmatch'], 
+      (click)="router.navigate(['detailmatch'], 
           { state: {  Lieu: match.Lieu, 
                       CA: match.CodeAdversaire,
                       NA: match.Adversaire,

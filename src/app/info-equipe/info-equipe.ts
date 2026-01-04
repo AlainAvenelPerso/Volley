@@ -2,7 +2,7 @@ import { Component, AfterViewInit } from '@angular/core';
 import * as L from 'leaflet';
 import { Router } from '@angular/router';
 import { GlobalService } from '../services/global';
-import { InfosEquipe } from '../models/models';
+import { InfosEquipe } from '../../models/models';
 
 @Component({
   selector: 'app-info-equipe',
