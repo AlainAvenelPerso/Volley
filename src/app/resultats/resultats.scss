@@ -1,62 +1,71 @@
-.tableau-resultats {
+/* Conteneur scrollable */
+.tableau-wrapper {
   width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  color: #000;
-  table-layout: fixed; /* indispensable */
-
-  th, td {
-    padding: 6px 8px;
-    border: 1px solid #ddd;
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  /* Colonne Équipe : largeur minimale contrôlée */
-  th:first-child,
-  td:first-child {
-    width: 120px;      /* largeur minimale */
-    max-width: 150px;  /* empêche d'être énorme */
-    min-width: 100px;  /* empêche d'être trop petite */
-    text-align: left;
-  }
-
-  /* Colonnes de scores : largeur minimale identique */
-  .score-cell {
-    width: 1%;         /* force la largeur minimale */
-    min-width: 45px;   /* lisible */
-    text-align: center;
-    // padding-left: 0;
-    // padding-right: 0;
-  }
-
-  /* Zébrage */
-  tbody tr:nth-child(odd) {
-    background-color: #fafafa;
-  }
-
-  tbody tr:nth-child(even) {
-    background-color: #eaeaea;
-  }
-
-  /* Hover */
-  tbody tr:hover {
-    background-color: #d6e4ff;
-    transition: 0.2s;
-  }
-
-  /* Diagonale grisée */
-  td.diagonale {
-    background-color: #ccc !important;
-    color: #666;
-    font-style: italic;
-  }
+  overflow-x: auto;
 }
 
-/* Header forcé si thème global sombre */
-:host ::ng-deep .tableau-resultats thead tr {
+/* Le tableau prend exactement la largeur nécessaire */
+.tableau-resultats {
+  width: max-content;
+  border-collapse: collapse;
+  table-layout: fixed; /* stabilise les colonnes */
+  font-size: 14px;
+  margin: 0 auto; /* centre si possible */
+  color: #000!important;
+}
+
+/* Cellules générales */
+.tableau-resultats th,
+.tableau-resultats td {
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Colonne Équipe : doit afficher tout le texte */
+.tableau-resultats th:first-child,
+.tableau-resultats td:first-child {
+  white-space: nowrap;   /* ne jamais couper */
+  width: auto;           /* largeur naturelle */
+  max-width: none;       /* pas de limite */
+  overflow: visible;     /* pas de coupure */
+  text-overflow: unset;  /* pas de "..." */
+  font-weight: 600;
+  text-align: left;
+}
+
+/* Colonnes de scores : largeur minimale */
+.tableau-resultats .score-cell {
+  min-width: 24px;       /* largeur mini */
+  white-space: nowrap;
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Zébrage */
+.tableau-resultats tbody tr:nth-child(odd) {
+  background-color: #fafafa;
+}
+
+.tableau-resultats tbody tr:nth-child(even) {
+  background-color: #eaeaea;
+}
+
+/* Hover */
+.tableau-resultats tbody tr:hover {
+  background-color: #d6e4ff;
+  transition: 0.2s;
+}
+
+.tableau-resultats thead tr {
   background-color: #f2f2f2 !important;
   color: #000 !important;
+}
+
+.tableau-resultats td.diagonale {
+  background-color: #c4c4c4;
+  color: #444;
 }

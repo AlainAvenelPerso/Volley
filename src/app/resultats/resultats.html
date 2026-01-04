@@ -1,4 +1,6 @@
 <!-- {{ resultats$ | async }} -->
+  <div class="tableau-wrapper">
+
 <table class="tableau-resultats">
 
   <thead>
@@ -16,7 +18,7 @@
 @for (ligne of lignesTableau; let i = $index; track ligne.Nom_Equipe) {
 
   <tr>
-    <td>{{ ligne.Nom_Equipe }}</td>
+    <td class="col-equipe">{{ ligne.Nom_Equipe }}</td>
 
     @for (col of colonnes; track col) {
       <td class="score-cell" [class.diagonale]="col === i + 1">
@@ -34,3 +36,4 @@
   </tbody>
 
 </table>
+</div>
