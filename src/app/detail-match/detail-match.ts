@@ -1,5 +1,5 @@
 import { Component, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { GlobalService } from '../services/global';
@@ -18,6 +18,7 @@ import { Renderer2 } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-detail-match',
@@ -50,9 +51,9 @@ export class DetailMatch {
   bValidScore: boolean = false;
   bMatchGagne: boolean = false;     // Le score fait qu'il ne pourra pas y avoir plus de sets car gagné
   DateMatch: string = "";
-  sets: number[][] = Array.from({ length: 5 }, () =>
-    Array.from({ length: 2 }, () => -1)
-  );
+  sets: number[][] = [];
+  bScoreModifiable: boolean = true; // Par défaut, le score est modifiable
+  bScoreDejaValideParTous: boolean = false; // Par défaut, le score n'a pas été validé par les 2 équipes
 
   constructor(private router: Router,
     private globalService: GlobalService,
@@ -61,8 +62,9 @@ export class DetailMatch {
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef) {
     const navigation = this.router.currentNavigation();
-    const state = navigation?.extras.state as { Lieu: string; CA: string; NA: string, DM: string, SD: number, SE: number 
-        ,  ED: number, EE: number // Valeurs venant de Resultats 
+    const state = navigation?.extras.state as {
+      Lieu: string; CA: string; NA: string, DM: string, SD: number, SE: number
+      , ED: number, EE: number // Valeurs venant de Resultats 
 
     };
     console.log('State reçu dans le constructeur :', state);
@@ -79,7 +81,6 @@ export class DetailMatch {
   }
 
   ngOnInit(): void {
-
     this.nomEquipeConnectee = this.globalService.getEquipeConnectee().nom;
 
     console.log("paramètres reçus :", this.Lieu, this.codeAdversaire, this.ScoreArray);
@@ -89,19 +90,46 @@ export class DetailMatch {
       this.globalService.loadScoreMatch(this.Lieu, Number(this.codeAdversaire));
       this.match$ = this.globalService.getScoreMatch();
 
-      this.match$.subscribe(score => {
-        this.match = score;
-        console.log('Score reçu :', this.match);
-        for (let i = 0; i < this.iVisibleSlider - 1; i++) {       // Récupère le score déjà saisi
-          this.sets[i][0] = (this.match as any)[`S${i + 1}D`];
-          this.sets[i][1] = (this.match as any)[`S${i + 1}E`];
-        }
-      });
+
+      this.match$.pipe(filter(score => score !== null), // ignore la valeur initiale 
+        take(1)   // ne prend qu’un seul score 
+      )
+        .subscribe(score => {
+          //console.log("subscribe activé");
+          if (!score)
+            return; // Ne rien faire si score est null ou undefined 
+
+          this.match = score;
+          console.log('Score reçu :', this.match);
+          if (this.match.VE == true && this.match.VD == true) {   // Score déjà validé par les 2 équipes
+            this.bScoreDejaValideParTous = true;
+            this.bScoreModifiable = false;   // Score non modifiable
+          }
+          else if ((this.Lieu == "D" && this.match.VE == true) || (this.Lieu == "E" && this.match.VD == true)
+          ) {
+            this.bScoreModifiable = false;   // Score non modifiable
+            console.log('Score non modifiable');
+          }
+          else {
+            this.bScoreModifiable = true;    // Score modifiable : On le fait en dépit du defaut car on passe ici d'abord
+            console.log('Score modifiable');
+          }
+          //console.log('iVisibleSlider défini à :', this.iVisibleSlider);
+          for (let i = 0; i < this.iVisibleSlider - 1; i++) {       // Récupère le score déjà saisi
+            if (!this.sets[i]) { this.sets[i] = [0, 0]; }
+            this.sets[i][0] = (this.match as any)[`S${i + 1}D`];
+            this.sets[i][1] = (this.match as any)[`S${i + 1}E`];
+          }
+          this.bValidScore = true;      // On part du principe que le score est valide
+          console.log('Sets initialisés à :', this.sets);
+        });
     }
   }
 
   ngAfterViewInit() {
-    this.myInputs.changes.subscribe((inputs: QueryList<ElementRef>) => {
+    //console.log("ngAfterViewInit déclenché", this.iVisibleSlider, this.bScoreModifiable);
+
+    this.myInputs.changes.pipe(take(1)).subscribe((inputs: QueryList<ElementRef>) => {
       inputs.forEach((input, idx) => {
         input.nativeElement.addEventListener('input', (event: any) => {
           this.sets[Math.floor(idx / 2)][idx % 2] = Number(event.target.value);     // Met à jour le set
@@ -155,13 +183,22 @@ export class DetailMatch {
     });
   }
 
-openSnackBar() {
-  this.snackBar.open('Action effectuée !', 'Fermer', {
-    duration: 2000, // é secondes
-    horizontalPosition: 'right',
-    verticalPosition: 'top'
-  });
-}
+  onScoreChange(i: number, joueur: number, value: string) {
+    console.log(`Score changé pour le set ${i}, joueur ${joueur} :`, value);
+    const v = Number(value);
+    if (!isNaN(v)) {
+      this.sets[i - 1][joueur] = v;
+    }
+  }
+
+  openSnackBar() {
+    this.snackBar.open('Action effectuée !', 'Fermer', {
+      duration: 2000, // é secondes
+      horizontalPosition: 'right',
+      verticalPosition: 'top'
+    });
+  }
+
   effacerSet() {
     this.iVisibleSlider--;
     this.bMatchGagne = false;     // On peut rejouer des sets
@@ -196,10 +233,15 @@ openSnackBar() {
   validationScore() {
     console.log('Scores validés :', this.sets);
 
+    if (this.bScoreModifiable == false) {
+      var messagePopup = 'Le score a déjà été saisi par l\'adversaire. Voulez-vous vraiment le confirmer ?';
+    }
+    else
+      var messagePopup = 'Confirmez-vous le score saisi ?';
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Confirmation',
-        message: 'Voulez-vous vraiment supprimer cet élément ?'
+        message: messagePopup
       }
     });
 
@@ -213,14 +255,19 @@ openSnackBar() {
           EE = this.globalService.getEquipeConnectee().code;
           ED = Number(this.codeAdversaire);
         }
-        this.globalService.enregistrerScoreMatch(this.Lieu, ED, EE, this.ScoreArray, this.sets);
+        if (this.bScoreModifiable == false) {
+          this.globalService.confirmerScoreMatch(this.Lieu, ED, EE);    // Confirmation du score déjà saisi
+        }
+        else {
+          this.globalService.enregistrerScoreMatch(this.Lieu, ED, EE, this.ScoreArray, this.sets);
+        }
 
-          this.snackBar.open('Opération réussie', 'OK', {
-      duration: 2000
-    });
-       this.snackBar.open('Opération réussie', 'OK', {
-      duration: 2000
-    });
+        this.snackBar.open('Opération réussie', 'OK', {
+          duration: 2000
+        });
+        //    this.snackBar.open('Opération réussie', 'OK', {
+        //   duration: 2000
+        // });
 
       } else {
         console.log('Score annulée');

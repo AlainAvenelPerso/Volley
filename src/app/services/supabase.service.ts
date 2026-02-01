@@ -26,7 +26,7 @@ export class SupabaseService {
   async loginParameter(parameter: string) {
     try {
       // Hash the password with SHA256
-      console.log('Récupération du paramètre Supabase pour', parameter);
+      //console.log('Récupération du paramètre Supabase pour', parameter);
 
       const { data, error } = await this.supabase
         .from('Params')
@@ -43,7 +43,7 @@ export class SupabaseService {
       }
 
       if (data) {
-        console.log('Paramètre récupéré : ', data);
+        //console.log('Paramètre récupéré : ', data);
         return data;
       }
 
@@ -105,7 +105,7 @@ export class SupabaseService {
     // console.log('loadCategories called with saison récup :', saison);
     try {
       // Hash the password with SHA256
-      console.log('Récupération des catégories pour la saison', saison);
+      //console.log('Récupération des catégories pour la saison', saison);
 
       const { data, error } = await this.supabase
         .from('Categories')
@@ -125,12 +125,12 @@ export class SupabaseService {
 
 
       if (data) {
-        console.log('Données des catégories récupérées : ', data);
+        //console.log('Données des catégories récupérées : ', data);
         // Mapper les résultats Supabase vers ta classe Categorie
         const categories = data.map(
           (row: any) => new Categorie(row.Code_Categorie, row.Nom_Categorie)
         );
-        console.log('Catégories chargées :', categories);
+        //console.log('Catégories chargées :', categories);
         return categories;
       }
 
@@ -146,7 +146,7 @@ export class SupabaseService {
       // Hash the password with SHA256
       const passwordHash = crypto.SHA256(password).toString();
 
-      console.log('Tentative de connexion Supabase pour', username, passwordHash);
+      //console.log('Tentative de connexion Supabase pour', username, passwordHash);
 
       // Query the 'Equipes' table for matching username and password hash
       const { data, error } = await this.supabase
@@ -169,7 +169,7 @@ export class SupabaseService {
       }
 
       if (data) {
-        console.log('Connexion Supabase réussie pour', username, data);
+        //console.log('Connexion Supabase réussie pour', username, data);
         return data;
       }
 
@@ -268,7 +268,7 @@ export class SupabaseService {
 
   async loadMatchsEquipe(equipe: number) {
     try {
-      console.log('Récupération des matchs pour l\'équipe', equipe);
+      //console.log('Récupération des matchs pour l\'équipe', equipe);
 
       // Query the 'Equipes' table for matching username and password hash
       const { data, error } = await this.supabase
@@ -304,7 +304,7 @@ export class SupabaseService {
       // Query the 'Equipes' table for matching username and password hash
       const { data, error } = await this.supabase
         .from('Matchs')
-        .select('Sets_Domicile, Sets_Exterieur, S1D, S2D, S3D, S4D, S5D, S1E, S2E, S3E, S4E, S5E')
+        .select('Sets_Domicile, Sets_Exterieur, S1D, S2D, S3D, S4D, S5D, S1E, S2E, S3E, S4E, S5E, VD, VE')
         .eq('Equipe_Domicile', ED)
         .eq('Equipe_Exterieure', EE)
         .single();
@@ -363,6 +363,36 @@ export class SupabaseService {
         .eq('Equipe_Exterieure', EE);
 
       console.log('Score enregistré avec succès pour le match');
+    }
+    catch (error: any) {
+      console.error('Erreur Supabase lors de l\'enregistrement du score:', error.message);
+      throw error;
+    }
+  }
+
+    async confirmerScoreMatch(Lieu: string, ED: number, EE: number): Promise<void> {
+    try {
+      console.log('Confirmation du score pour le match', ED, EE);
+
+      const updateData: Record<string, any> = {};
+
+      const today: string = new Date().toISOString().split('T')[0];
+
+      if (Lieu == "D") {
+        updateData['VD'] = true;
+        updateData['VD_DATE'] = today;
+      } else {
+        updateData['VE'] = true;
+        updateData['VE_DATE'] = today;
+      }
+
+      await this.supabase
+        .from('Matchs')
+        .update(updateData)
+        .eq('Equipe_Domicile', ED)
+        .eq('Equipe_Exterieure', EE);
+
+      console.log('Score confirmé avec succès pour le match');
     }
     catch (error: any) {
       console.error('Erreur Supabase lors de l\'enregistrement du score:', error.message);

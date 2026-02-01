@@ -51,6 +51,8 @@ export class Score {
   S3E: number;
   S4E: number;
   S5E: number;
+  VD: boolean;
+  VE: boolean;
 
   constructor(Sets_Domicile: number, Sets_Exterieur: number,
     S1D: number, S2D: number, S3D: number, S4D: number, S5D: number,
@@ -67,6 +69,8 @@ export class Score {
     this.S5E = S5E;
     this.Sets_Domicile = Sets_Domicile;
     this.Sets_Exterieur = Sets_Exterieur;
+    this.VD = false;
+    this.VE = false;
   }
 }
 

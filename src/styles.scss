@@ -41,12 +41,14 @@ main::-webkit-scrollbar-thumb:hover {
 .button-container {
   display: flex;             /* active flexbox */
   flex-direction: column;    /* empile les boutons verticalement */
-  justify-content: center;   /* centre verticalement */
+  //justify-content: center;   /* centre verticalement */
+  justify-content: flex-start; /* important : sinon le scroll ne sert à rien */
   //align-items: center;       /* centre horizontalement */   => Ne pas mettre sinon les boutons n'ont pas la même taille
   //height: 100%;              /* prend toute la hauteur de la fenêtre */
   gap: 30px;                 /* espace entre les boutons */
   padding-left: 40px;
   padding-right: 40px;
+  max-height: calc(100vh - 100px); /* ajuste la hauteur pour éviter le dépassement sous le header */
 }
 
 button {

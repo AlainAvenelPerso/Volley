@@ -59,9 +59,9 @@ export class GlobalService {
 
   loginWithUserAndPassword(username: string, password: string): void {
 
-    console.log('Tentative de connexion Supabase pour', username, this.Categories);
+    //console.log('Tentative de connexion Supabase pour', username, this.Categories);
     this.supabase.loginWithQuery(username, password, this.Categories).then((data: any) => {
-      console.log('Connexion Global réussie pour', username, data);
+      //console.log('Connexion Global réussie pour', username, data);
       //this.isConnected = true;
       this.equipeConnectee = new Equipe(data.Code_Equipe, data.Nom_Equipe, data.Code_Categorie, data.Categories.Nom_Categorie);
       //this.auth.setConnected(true, this.userId);
@@ -96,7 +96,7 @@ export class GlobalService {
       this.getParsedSaison(); // This will now emit the new value to subscribers
       this.supabase.loadCategories(this.SaisonCourante).then((data: any) => {
         this.Categories = data;
-        console.log('Catégories chargées dans GlobalService :', this.Categories);
+        //console.log('Catégories chargées dans GlobalService :', this.Categories);
       });
     });
   }
@@ -119,7 +119,7 @@ export class GlobalService {
   loadMatchsEquipe(): void {
     this.supabase.loadMatchsEquipe(this.equipeConnectee.code).then((data: Match[]) => {
       this.matchsSubject.next(data);
-      console.log('Matchs chargés dans GlobalService :', data);
+      //console.log('Matchs chargés dans GlobalService :', data);
     });
   }
 
@@ -165,7 +165,7 @@ export class GlobalService {
   loadCategories(saison: string): void {
     this.supabase.loadCategories(saison).then((data: Categorie[]) => {
       this.categoriesSubject.next(data);
-      console.log('Catégories chargées dans GlobalService :', data);
+      //console.log('Catégories chargées dans GlobalService :', data);
     });
   }
 
@@ -220,6 +220,13 @@ export class GlobalService {
     this.logDebug('GlobalService: enregistrerScoreMatch', ED, EE, sets);
     this.supabase.enregistrerScoreMatch(Lieu, ED, EE, Score, sets).then(() => {
       console.log('Score enregistré avec succès');
+    });
+  }
+
+  confirmerScoreMatch(Lieu: string, ED: number, EE: number): void {
+    this.logDebug('GlobalService: confirmerScoreMatch', Lieu, ED, EE);
+    this.supabase.confirmerScoreMatch(Lieu, ED, EE).then(() => {
+      console.log('Score confirmé avec succès');
     });
   }
 

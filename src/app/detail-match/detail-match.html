@@ -10,31 +10,66 @@
 
   <!-- <input #myInput class="score" /> -->
   @if (ScoreArray[0] != null && (ScoreArray[0] + ScoreArray[1]) > 0) {
-  <p><b>Score :</b> {{ ScoreArray[0] }} / {{ ScoreArray[1] }} </p>
+    <p><b>Score :</b> {{ ScoreArray[0] }} / {{ ScoreArray[1] }} </p>
   }
 
-  @for (i of [1,2,3,4,5]; track i) {
-  @if (i < iVisibleSlider) { <button class="bouton" (click)="augmenteScore(i, 0)">+</button>
-    <input #myInput class="score" [value]="sets[i-1][0] > 0 ? sets[i-1][0] : ''" /> - <input #myInput class="score" [value]="sets[i-1][1] > 0 ? sets[i-1][1] : ''" />
-    <button class="bouton" (click)="augmenteScore(i, 1)">+</button>
+  <!-- Values : {{ sets | json }} <BR> -->
 
-    @if (i == iVisibleSlider - 1) { <!--   Sur le dernier set saisi, on affiche le bouton effacer -->
-    <button class="boutonGomme" (click)="effacerSet()" mat-raised-button color="primary">
-      <img src="assets/gomme.png" alt="Effacer" width="20" height="20" />
-    </button>
-    }
-    <BR>
-    }
+  @if (bScoreModifiable == true) {
+    @if (sets != []){
+      @for (i of [1,2,3,4,5]; track i) {
+        @if (i < iVisibleSlider) { 
+          <button class="bouton" (click)="augmenteScore(i, 0)">+</button>
+          <input #myInput class="score" 
+            [value]="(sets[i-1]?.[0] ?? 0) > 0 ? sets[i-1]?.[0] : ''" (input)="onScoreChange(i, 0, $event.target.value)" /> 
+           -  
+          <input #myInput class="score"
+            [value]="(sets[i-1]?.[1] ?? 0) > 0 ? sets[i-1]?.[1] : ''" (input)="onScoreChange(i, 1, $event.target.value)"/>
+        
+          <button class="bouton" (click)="augmenteScore(i, 1)">+</button>
 
-    @else if (i == iVisibleSlider && bMatchGagne == false && sets[i][0] != null && sets[i][1] != null) {  <!-- Set en cours de saisie -->
-    <mat-slider min="-1" max="1" step="1">
-      <input matSliderThumb [(ngModel)]="position" (valueChange)="onSliderChangeEvent($event)" />
-    </mat-slider>
+          @if (i == iVisibleSlider - 1) {
+            <!--   Sur le dernier set saisi, on affiche le bouton effacer -->
+            <button class="boutonGomme" (click)="effacerSet()" mat-raised-button color="primary">
+              <img src="assets/gomme.png" alt="Effacer" width="20" height="20" />
+            </button>
+          }
+        <BR>
+        }
+
+      }
     }
+  } 
+  @else {
+    @if (sets != []) {
+      @for (i of [1,2,3,4,5]; track i) {
+        @if (sets[i-1]?.[0] != null ) {
+          {{sets[i-1]?.[0]}} - {{sets[i-1]?.[1]}}
+          <BR>
+        }
+      }
     }
-    <BR>
-    @if (iVisibleSlider > 1) {
-        <button (click)="validationScore()" mat-raised-button color="primary" [disabled]="!bValidScore">Valider</button>
+    <!-- <p>Score non modifiable</p> -->
+  }
+
+  <BR>
+  @if (iVisibleSlider > 1 ) {
+    @if (bScoreDejaValideParTous == false) {
+      <button (click)="validationScore()" mat-raised-button color="primary" [disabled]="!bValidScore">
+      @if (bScoreModifiable == true) {
+        Valider
+      } @else {
+        Confirmer
+      }
+      </button>
     }
+  }
+  @if (bScoreDejaValideParTous == true) {
+    <p>Score déjà validé par les 2 équipes. Contacter l'administrateur pour le modifier.</p>
+  }
+  @else if (!bScoreModifiable == true) {
+    <p>Score déjà saisi par l'adversaire</p>
+  }
     
+
 </div>
