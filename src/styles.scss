@@ -1,4 +1,6 @@
 @import "leaflet/dist/leaflet.css";
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
 
 body {
   margin: 0;
@@ -60,7 +62,7 @@ button {
   color: white;                /* texte blanc */
   border: none;                /* pas de bordure */
   border-radius: 6px;          /* coins arrondis */
-  touch-action: none;     // Pour faire swipe sur les boutons
+  touch-action: pan-x;     // Pour faire swipe sur les boutons
 }
 
 
@@ -84,4 +86,9 @@ html, body {
 .SurchargeDiv {
   align-items: center;
   gap: 5px;
+}
+
+.cdk-overlay-container {
+  overflow: visible !important;
+  z-index: 9999 !important;
 }

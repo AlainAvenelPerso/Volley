@@ -19,11 +19,12 @@ import { ChangeDetectorRef } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { filter, take } from 'rxjs/operators';
+import { DialogService } from '../services/dialog.service';
 
 @Component({
   selector: 'app-detail-match',
   imports: [
-    MatSliderModule, FormsModule, MatButtonToggleModule, ReactiveFormsModule, CommonModule, MatSnackBarModule
+    MatSliderModule, FormsModule, MatButtonToggleModule, ReactiveFormsModule, CommonModule, MatSnackBarModule, 
   ],
   templateUrl: './detail-match.html',
   styleUrl: './detail-match.scss',
@@ -60,7 +61,8 @@ export class DetailMatch {
     private fb: FormBuilder,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef) {
+    private cdr: ChangeDetectorRef,
+    private dialogService: DialogService) {
     const navigation = this.router.currentNavigation();
     const state = navigation?.extras.state as {
       Lieu: string; CA: string; NA: string, DM: string, SD: number, SE: number
@@ -126,74 +128,60 @@ export class DetailMatch {
     }
   }
 
-  ngAfterViewInit() {
-    //console.log("ngAfterViewInit déclenché", this.iVisibleSlider, this.bScoreModifiable);
-
-    this.myInputs.changes.pipe(take(1)).subscribe((inputs: QueryList<ElementRef>) => {
-      inputs.forEach((input, idx) => {
-        input.nativeElement.addEventListener('input', (event: any) => {
-          this.sets[Math.floor(idx / 2)][idx % 2] = Number(event.target.value);     // Met à jour le set
-          this.globalService.logDebug(`Input ${idx} changé :`, event.target.value, this.sets, this.iVisibleSlider);
-          // Validation du score
-          this.bValidScore = true;      // Score valide par défaut
-          this.bMatchGagne = false;     // On remet à faux, on va vérifier
-          this.ScoreArray[0] = 0;     // Réinitialisation des scores
-          this.ScoreArray[1] = 0;
-          //let setsGagne = [0, 0];   // Nombre de sets gagnés par chaque équipe
-          for (let i = 0; i < this.iVisibleSlider - 1; i++) {
-            this.globalService.logDebug(`Vérification du set ${i + 1} :`, this.sets[i]);
-            if (this.sets[i][0] < 0 || this.sets[i][1] < 0) {       // Score négatif
-              this.bValidScore = false;
-              this.globalService.logDebug('Score négatif détecté dans set', i + 1);
-            }
-            if (this.iVisibleSlider < 5) { // Si moins de 5 sets joués
-              if (this.sets[i][0] < 25 && this.sets[i][1] < 25) {              // Pas assez de points
-                this.bValidScore = false;
-                console.log('Pas assez de points dans set', i + 1);
-              }
-            }
-            else { // 5ème set
-              if (this.sets[i][0] < 15 && this.sets[i][1] < 15) {              // Pas assez de points
-                this.bValidScore = false;
-                console.log('Pas assez de points dans set', i + 1);
-              }
-            }
-            if (Math.abs(this.sets[i][0] - this.sets[i][1]) < 2) {  // Moins de 2 points d'écart
-              this.bValidScore = false;
-              console.log('Moins de 2 points d\'écart dans set', i + 1);
-            }
-            // Pas d'erreur détectée, on compte le set gagné
-            if (this.sets[i][0] > this.sets[i][1])
-              this.ScoreArray[0]++;
-            //setsGagne[0]++;
-            else
-              this.ScoreArray[1]++;
-            //setsGagne[1]++;
-          }
-          // Vérification du nombre des sets gagnés
-          if (this.ScoreArray[0] < 3 && this.ScoreArray[1] < 3) {   // Match pas encore gagné, on peut continuer}
-            this.bValidScore = false;
-            this.globalService.logDebug('Match pas encore gagné', this.iVisibleSlider, this.bMatchGagne, this.ScoreArray);
-          }
-          if (this.ScoreArray[0] == 3 || this.ScoreArray[1] == 3)    // Match déjà gagné
-            this.bMatchGagne = true;
-          //this.Score = this.ScoreArray[0] + " / " + this.ScoreArray[1];
-        });
-      });
-    });
-  }
-
-  onScoreChange(i: number, joueur: number, value: string) {
-    console.log(`Score changé pour le set ${i}, joueur ${joueur} :`, value);
-    const v = Number(value);
-    if (!isNaN(v)) {
-      this.sets[i - 1][joueur] = v;
+  onScoreChange(i: number, colonne: number, value: string) {
+    console.log(`Score changé pour le set ${i}, colonne ${colonne} :`, value);
+    this.sets[i - 1][colonne] = Number(value);
+    // Validation du score
+    this.bValidScore = true;      // Score valide par défaut
+    this.bMatchGagne = false;     // On remet à faux, on va vérifier
+    this.ScoreArray[0] = 0;     // Réinitialisation des scores
+    this.ScoreArray[1] = 0;
+    //let setsGagne = [0, 0];   // Nombre de sets gagnés par chaque équipe
+    for (let i = 0; i < this.iVisibleSlider - 1; i++) {
+      this.globalService.logDebug(`Vérification du set ${i + 1} :`, this.sets[i]);
+      if (this.sets[i][0] < 0 || this.sets[i][1] < 0) {       // Score négatif
+        this.bValidScore = false;
+        this.globalService.logDebug('Score négatif détecté dans set', i + 1);
+      }
+      if (this.iVisibleSlider < 5) { // Si moins de 5 sets joués
+        if (this.sets[i][0] < 25 && this.sets[i][1] < 25) {              // Pas assez de points
+          this.bValidScore = false;
+          console.log('Pas assez de points dans set', i + 1);
+        }
+      }
+      else { // 5ème set
+        if (this.sets[i][0] < 15 && this.sets[i][1] < 15) {              // Pas assez de points
+          this.bValidScore = false;
+          console.log('Pas assez de points dans set', i + 1);
+        }
+      }
+      if (Math.abs(this.sets[i][0] - this.sets[i][1]) < 2) {  // Moins de 2 points d'écart
+        this.bValidScore = false;
+        console.log('Moins de 2 points d\'écart dans set', i + 1);
+      }
+      // Pas d'erreur détectée, on compte le set gagné
+      if (this.sets[i][0] > this.sets[i][1])
+        this.ScoreArray[0]++;
+      //setsGagne[0]++;
+      else
+        this.ScoreArray[1]++;
+      //setsGagne[1]++;
     }
+    // Vérification du nombre des sets gagnés
+    if (this.ScoreArray[0] < 3 && this.ScoreArray[1] < 3) {   // Match pas encore gagné, on peut continuer}
+      this.bValidScore = false;
+      this.globalService.logDebug('Match pas encore gagné', this.iVisibleSlider, this.bMatchGagne, this.ScoreArray);
+    }
+    if (this.ScoreArray[0] == 3 || this.ScoreArray[1] == 3)    // Match déjà gagné
+      this.bMatchGagne = true;
+    //this.Score = this.ScoreArray[0] + " / " + this.ScoreArray[1];
+
   }
+
 
   openSnackBar() {
     this.snackBar.open('Action effectuée !', 'Fermer', {
-      duration: 2000, // é secondes
+      duration: 2000, // 2 secondes
       horizontalPosition: 'right',
       verticalPosition: 'top'
     });
@@ -238,14 +226,8 @@ export class DetailMatch {
     }
     else
       var messagePopup = 'Confirmez-vous le score saisi ?';
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Confirmation',
-        message: messagePopup
-      }
-    });
 
-    dialogRef.afterClosed().subscribe(result => {
+    this.dialogService.confirm('Confirmation', messagePopup, false).subscribe(result => {
       if (result) {
         console.log('Score confirmée');
         let ED = this.globalService.getEquipeConnectee().code;
@@ -265,14 +247,40 @@ export class DetailMatch {
         this.snackBar.open('Opération réussie', 'OK', {
           duration: 2000
         });
-        //    this.snackBar.open('Opération réussie', 'OK', {
-        //   duration: 2000
-        // });
 
       } else {
         console.log('Score annulée');
       }
     });
+
+    // dialogRef.afterClosed().subscribe(result => {
+    //   if (result) {
+    //     console.log('Score confirmée');
+    //     let ED = this.globalService.getEquipeConnectee().code;
+    //     let EE = Number(this.codeAdversaire);
+    //     //let SD = 
+    //     if (this.Lieu == "E") {
+    //       EE = this.globalService.getEquipeConnectee().code;
+    //       ED = Number(this.codeAdversaire);
+    //     }
+    //     if (this.bScoreModifiable == false) {
+    //       this.globalService.confirmerScoreMatch(this.Lieu, ED, EE);    // Confirmation du score déjà saisi
+    //     }
+    //     else {
+    //       this.globalService.enregistrerScoreMatch(this.Lieu, ED, EE, this.ScoreArray, this.sets);
+    //     }
+
+    //     this.snackBar.open('Opération réussie', 'OK', {
+    //       duration: 2000
+    //     });
+    //     //    this.snackBar.open('Opération réussie', 'OK', {
+    //     //   duration: 2000
+    //     // });
+
+    //   } else {
+    //     console.log('Score annulée');
+    //   }
+    // });
   }
 
 
@@ -323,15 +331,5 @@ export class DetailMatch {
       this.sets[i - 1][1 - j]++;
     if (this.sets[i - 1][j] > 25)                       // Au delà de 25, il faut 2 points d'écart
       this.sets[i - 1][1 - j] = this.sets[i - 1][j] - 2;
-    //this.ngAfterViewInit();     // On force la mise à jour des listeners
   }
-  //   onSliderChange(value: number) {
-  //   console.log('Valeur récupérée:', value);
-
-  // }
-  //   onInputChange(event: any) {
-  //     console.log('Valeur de l\'input:', event.value);
-  //   }
-
-
 }
