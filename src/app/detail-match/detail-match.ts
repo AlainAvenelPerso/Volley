@@ -20,6 +20,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { filter, take } from 'rxjs/operators';
 import { DialogService } from '../services/dialog.service';
+import { Location } from '@angular/common'
 
 @Component({
   selector: 'app-detail-match',
@@ -62,7 +63,8 @@ export class DetailMatch {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private dialogService: DialogService) {
+    private dialogService: DialogService,
+    private location: Location) {
     const navigation = this.router.currentNavigation();
     const state = navigation?.extras.state as {
       Lieu: string; CA: string; NA: string, DM: string, SD: number, SE: number
@@ -178,7 +180,6 @@ export class DetailMatch {
 
   }
 
-
   openSnackBar() {
     this.snackBar.open('Action effectuée !', 'Fermer', {
       duration: 2000, // 2 secondes
@@ -252,38 +253,7 @@ export class DetailMatch {
         console.log('Score annulée');
       }
     });
-
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result) {
-    //     console.log('Score confirmée');
-    //     let ED = this.globalService.getEquipeConnectee().code;
-    //     let EE = Number(this.codeAdversaire);
-    //     //let SD = 
-    //     if (this.Lieu == "E") {
-    //       EE = this.globalService.getEquipeConnectee().code;
-    //       ED = Number(this.codeAdversaire);
-    //     }
-    //     if (this.bScoreModifiable == false) {
-    //       this.globalService.confirmerScoreMatch(this.Lieu, ED, EE);    // Confirmation du score déjà saisi
-    //     }
-    //     else {
-    //       this.globalService.enregistrerScoreMatch(this.Lieu, ED, EE, this.ScoreArray, this.sets);
-    //     }
-
-    //     this.snackBar.open('Opération réussie', 'OK', {
-    //       duration: 2000
-    //     });
-    //     //    this.snackBar.open('Opération réussie', 'OK', {
-    //     //   duration: 2000
-    //     // });
-
-    //   } else {
-    //     console.log('Score annulée');
-    //   }
-    // });
   }
-
-
 
   // Slider activé
   onSliderChangeEvent(event: number) {
@@ -331,5 +301,9 @@ export class DetailMatch {
       this.sets[i - 1][1 - j]++;
     if (this.sets[i - 1][j] > 25)                       // Au delà de 25, il faut 2 points d'écart
       this.sets[i - 1][1 - j] = this.sets[i - 1][j] - 2;
+  }
+
+  retourPagePrecedente(){
+    this.location.back(); // Retourne à la page précédente
   }
 }
