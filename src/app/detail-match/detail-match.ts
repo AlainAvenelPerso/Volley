@@ -222,9 +222,8 @@ export class DetailMatch {
   validationScore() {
     console.log('Scores validés :', this.sets);
 
-    if (this.bScoreModifiable == false) {
+    if (this.bScoreModifiable == false) 
       var messagePopup = 'Le score a déjà été saisi par l\'adversaire. Voulez-vous vraiment le confirmer ?';
-    }
     else
       var messagePopup = 'Confirmez-vous le score saisi ?';
 
@@ -240,6 +239,7 @@ export class DetailMatch {
         }
         if (this.bScoreModifiable == false) {
           this.globalService.confirmerScoreMatch(this.Lieu, ED, EE);    // Confirmation du score déjà saisi
+          this.bScoreDejaValideParTous = true;   // Le score est maintenant validé par les 2 équipes
         }
         else {
           this.globalService.enregistrerScoreMatch(this.Lieu, ED, EE, this.ScoreArray, this.sets);
