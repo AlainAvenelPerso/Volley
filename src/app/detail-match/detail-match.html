@@ -1,9 +1,30 @@
 <div class="centre">
   <h2>
     @if ((Lieu == "D")) {
-    <p>{{ nomEquipeConnectee }}{{separator}}{{ nomAdversaire }}</p>
+    <p>
+      <button class="bouton-equipe" (click)="this.router.navigate(['info-equipe'],
+                                                { state: {  codeEquipe: codeEquipeConnectee, codeCategorie: 0 }})">
+        {{ nomEquipeConnectee }}
+      </button>
+      {{separator}}
+      <button class="bouton-equipe" (click)="this.router.navigate(['info-equipe'], 
+                                                { state: {  codeEquipe: codeAdversaire, codeCategorie: 0 }})">
+        {{ nomAdversaire }}
+      </button>
+    </p>
     } @else {
-    <p>{{nomAdversaire}}{{separator}}{{nomEquipeConnectee}}</p>
+    <p>
+      <button class="bouton-equipe" (click)="this.router.navigate(['info-equipe'], 
+                                                { state: {  codeEquipe: codeAdversaire, codeCategorie: 0 }})">
+        {{ nomAdversaire }}
+      </button>
+      {{separator}}
+      <button class="bouton-equipe" (click)="this.router.navigate(['info-equipe'],
+                                                { state: {  codeEquipe: codeEquipeConnectee, codeCategorie: 0 }})">
+        {{ nomEquipeConnectee }}
+      </button>
+
+    </p>
     }
   </h2>
   <h3>{{ DateMatch | date:'dd/MM/yyyy' }} </h3>

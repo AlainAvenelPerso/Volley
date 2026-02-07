@@ -6,8 +6,6 @@
         {{ InfoEquipe?.capitaine?.Prenom }} {{ InfoEquipe?.capitaine?.Nom }}
         &nbsp;
         <img class="icone-mail" (click)="openMail()" src="assets/send-mail.png">
-
-        <!-- <a href="mailto:{{ InfoEquipe?.capitaine?.Mail1 }}">{{ InfoEquipe?.capitaine?.Mail1 }}</a> -->
         <button (click)="callNumber()">{{ InfoEquipe?.capitaine?.TelPortable }}</button>
     </div>
     }

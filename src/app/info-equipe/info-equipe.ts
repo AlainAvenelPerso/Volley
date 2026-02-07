@@ -21,7 +21,7 @@ export class InfoEquipe implements AfterViewInit {
   constructor(private globalService: GlobalService, public router: Router) {
     const state = history.state as { codeEquipe: number, codeCategorie: number };
 
-    console.log('InfoEquipe initialized with CodeEquipe:', state?.codeEquipe, state?.codeCategorie);
+    console.log('InfoEquipe initialized with CodeEquipe:', state, state?.codeEquipe, state?.codeCategorie);
     this.equipeCode = state.codeEquipe;
   }
 

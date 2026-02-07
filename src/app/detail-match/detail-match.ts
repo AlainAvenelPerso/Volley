@@ -22,6 +22,7 @@ import { filter, take } from 'rxjs/operators';
 import { DialogService } from '../services/dialog.service';
 import { Location } from '@angular/common'
 
+
 @Component({
   selector: 'app-detail-match',
   imports: [
@@ -39,6 +40,7 @@ export class DetailMatch {
   separator: string = " / ";
   nomEquipeConnectee: string = "";
   Lieu: any;
+  codeEquipeConnectee: any; // Code de l'équipe connectée
   codeAdversaire: any; // Code de l'adversaire reçu en paramètre
   nomAdversaire: any;
   ScoreArray: number[] = [0, 0];
@@ -57,7 +59,7 @@ export class DetailMatch {
   bScoreModifiable: boolean = true; // Par défaut, le score est modifiable
   bScoreDejaValideParTous: boolean = false; // Par défaut, le score n'a pas été validé par les 2 équipes
 
-  constructor(private router: Router,
+  constructor(public router: Router,
     private globalService: GlobalService,
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -85,15 +87,17 @@ export class DetailMatch {
   }
 
   ngOnInit(): void {
-    this.nomEquipeConnectee = this.globalService.getEquipeConnectee().nom;
+
 
     console.log("paramètres reçus :", this.Lieu, this.codeAdversaire, this.ScoreArray);
+    this.nomEquipeConnectee = this.globalService.getEquipeConnectee().nom;
+    this.codeEquipeConnectee = this.globalService.getEquipeConnectee().code;
 
+    console.log("Params équipes :", this.codeEquipeConnectee, this.codeAdversaire);
     if (this.ScoreArray[0] != null) {   // Score déjà saisi mais on ne reçoit que le score
       this.iVisibleSlider = this.ScoreArray[0] + this.ScoreArray[1] + 1;
       this.globalService.loadScoreMatch(this.Lieu, Number(this.codeAdversaire));
       this.match$ = this.globalService.getScoreMatch();
-
 
       this.match$.pipe(filter(score => score !== null), // ignore la valeur initiale 
         take(1)   // ne prend qu’un seul score 
@@ -303,6 +307,10 @@ export class DetailMatch {
       this.sets[i - 1][1 - j] = this.sets[i - 1][j] - 2;
   }
 
+  infoEquipe(){
+    this.router.navigate(['/info-equipe']);
+  }
+  
   retourPagePrecedente(){
     this.location.back(); // Retourne à la page précédente
   }
