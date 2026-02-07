@@ -53,8 +53,10 @@
   }
 
   <BR>
+    <button mat-button (click)="retourPagePrecedente()">Retour</button>
   @if (iVisibleSlider > 1 ) {
     @if (bScoreDejaValideParTous == false) {
+      &nbsp;&nbsp;
       <button (click)="validationScore()" mat-raised-button color="primary" [disabled]="!bValidScore">
       @if (bScoreModifiable == true) {
         Valider
