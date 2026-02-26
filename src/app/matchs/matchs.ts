@@ -8,7 +8,8 @@ import { HostListener } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DialogService } from '../services/dialog.service';
-
+import { AppSession, AuthService } from '../services/auth.service';
+import { take } from 'rxjs/operators';
 @Component({
   selector: 'app-matchs',
   standalone: true,
@@ -21,20 +22,36 @@ export class Matchs {
   startX = 0;
   swipeThreshold: number; // sensibilité (px)
   showHelp = false;
+  session$!: Observable<AppSession>;
 
-  constructor(public router: Router, private globalService: GlobalService, private dialogService: DialogService) {
+  constructor(
+    public router: Router, 
+    private globalService: GlobalService, 
+    private dialogService: DialogService,
+    private auth: AuthService) {
     this.swipeThreshold = this.globalService.swipeThreshold;    // récupérer la sensibilité depuis le service global
+    this.session$ = this.auth.session$; 
   }
 
   ngOnInit(): void {
-    if (this.globalService.getEquipeConnectee().code !== 0) {       // load teams for the club
-      this.globalService.loadMatchsEquipe();
-      this.matchs$ = this.globalService.getMatchs();
-
-      console.log("Matchs :", this.matchs$);
-    }
-    else console.log("Aucune équipe connectée !");
+    this.auth.session$.pipe(take(1)).subscribe(session => {
+  if (session.code_equipe) {
+    console.log("Une équipe est connectée :", session.nom_equipe);
+    this.globalService.loadMatchsEquipe();
+    this.matchs$ = this.globalService.getMatchs();
+  } else {
+    console.log("Aucune équipe connectée");
   }
+});
+
+  //   if (this.globalService.getEquipeConnectee().code !== 0) {       // load teams for the club
+  //     this.globalService.loadMatchsEquipe();
+  //     this.matchs$ = this.globalService.getMatchs();
+
+  //     console.log("Matchs :", this.matchs$);
+  //   }
+  //   else console.log("Aucune équipe connectée !");
+   }
 
   trackByComposite(Lieu: string, CodeAdversaire: number): string {
     return `${Lieu}-${CodeAdversaire}`;

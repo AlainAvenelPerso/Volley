@@ -6,21 +6,98 @@ import { min } from 'rxjs';
 import { Categorie, Equipe, InfosEquipe, Joueur } from '../../models/models';
 import type { Gymnase, TClassement } from '../../models/models';
 
-
 const POINT_GAGNANT = 3;      // 3 points pour une victoire
 const POINT_PERDANT = 1       // 1 point pour une défaite
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
-  private supabase: SupabaseClient;
+  //private supabase: SupabaseClient;
 
-  constructor() {
+  constructor(private supabase: SupabaseClient) {
     // Initialize Supabase client with credentials from environment
-    this.supabase = createClient(
-      supabase.supabaseUrl,
-      supabase.supabaseKey
-    );
+        // Déplacé dasn app.ts
+    // this.supabase = createClient(
+    //   supabase.supabaseUrl,
+    //   supabase.supabaseKey,
+    //   { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+    // );
     //console.log('Supabase client initialized', supabase.supabaseUrl, supabase.supabaseKey);
+  }
+
+    // Méthode pour récupérer la session actuelle
+ async getSession() {
+  return this.supabase.auth.getSession();
+}
+
+    // Renvoie le user actuel ou null s'il n'est pas connecté
+  async getUser() {
+    const { data: { user } } = await this.supabase.auth.getUser();
+
+    const nom = user?.email?.split("@")[0] || "";
+    console.log('Utilisateur actuel récupéré:', user, nom);
+    const nomEquipe = await this.loadNomEquipe(nom);
+      console.log('Nom de l\'équipe récupéré pour l\'utilisateur', user?.email, ':', nomEquipe);
+      
+ 
+    return nomEquipe;
+  }
+  async loginWithUsername(username: string, password: string) {
+    // 1. Récupérer tous les users (admin.listUsers)
+    // const { data: usersData, error: listError } =
+    //   await this.supabase.auth.admin.listUsers();
+
+    // if (listError) throw listError;
+
+    // // 2. Trouver l'utilisateur par username
+    // const user = usersData.users.find(
+    //   (u) => u.user_metadata?.['username'] === username
+    // );
+
+    // if (!user) {
+    //   throw new Error('Utilisateur introuvable');
+    // }
+
+    // 3. Connexion via email technique
+    const { data, error } = await this.supabase.auth.signInWithPassword({
+      email: username,
+      password
+    });
+
+    if (error) throw error;
+
+    return data;
+  }
+
+    // Charge le nom de l'équipe en fonction de son code
+async loadNomEquipe(id: string) {
+    try {
+      // Hash the password with SHA256
+      //console.log('Récupération du paramètre Supabase pour', parameter);
+
+      const { data, error } = await this.supabase
+        .from('Equipes')
+        .select('Nom_Equipe')
+        .eq('Code_Equipe', id)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No rows returned
+          throw new Error('Équipe non trouvée.');
+        }
+        throw new Error(error.message);
+      }
+
+      if (data) {
+        console.log('Paramètre récupéré : ', data);
+        return data.Nom_Equipe;
+      }
+
+      throw new Error('Équipe non trouvée.');
+    } catch (error: any) {
+      console.error('Erreur Supabase:', error.message);
+      throw error;
+    }
   }
 
   async loginParameter(parameter: string) {
@@ -169,8 +246,10 @@ export class SupabaseService {
       }
 
       if (data) {
-        //console.log('Connexion Supabase réussie pour', username, data);
-        return data;
+        console.log('Connexion Supabase réussie pour', username, data);
+        const token = await this.generateToken(data.Code_Equipe);
+
+        console.log('Token généré pour l\'équipe', data.Code_Equipe, token);
       }
 
       throw new Error('Identifiant ou mot de passe incorrect.');
@@ -179,6 +258,26 @@ export class SupabaseService {
       throw error;
     }
   }
+
+  async generateToken(userId: string) {
+  const res = await fetch(
+    `${supabase.supabaseUrl}/functions/v1/generate-token`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabase.supabaseKey}`
+      },
+      body: JSON.stringify({
+        userId,
+        metadata: { admin: false }
+      })
+    }
+  );
+
+  const { token } = await res.json();
+  return token;
+}
 
   async logout() {
     const { error } = await this.supabase.auth.signOut();

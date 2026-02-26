@@ -6,7 +6,8 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Equipe } from '../../models/models';
 import { CommonModule } from '@angular/common';
-
+import { SupabaseService } from '../services/supabase.service';
+import { SupabaseClient } from '@supabase/supabase-js';
 @Component({
   selector: 'app-identification',
   imports: [FormsModule, CommonModule],
@@ -15,7 +16,7 @@ import { CommonModule } from '@angular/common';
 
 })
 export class IdentificationComponent {
-  username: string = '';
+  code_equipe: string = '';
   password: string = '';
   isConnected = false;
   userID$!: Observable<string>;
@@ -24,7 +25,8 @@ export class IdentificationComponent {
   constructor(
     private appMessage: AppMessageService,
     private globalService: GlobalService,
-    private router: Router
+    private router: Router,
+    private supabase: SupabaseClient
   ) {
 
   }
@@ -37,21 +39,50 @@ export class IdentificationComponent {
     }
   }
 
-  async loginWithSupabase(): Promise<void> {
-    if (!this.username || !this.password) {
+      // Fonctionne mais je vais le remplacer par une connexion via Supabase
+  // async loginWithSupabase(): Promise<void> {
+  //   if (!this.code_equipe || !this.password) {
+  //     this.appMessage.show('Veuillez remplir les champs utilisateur et mot de passe.', 3000);
+  //     return;
+  //   }
+
+  //   console.log('Tentative de connexion avec loginWithUsername pour', this.code_equipe);
+  //   // this.supabase.loginWithUsername("1121@myapp.local", "123456").then((user) => {
+  //   //   console.log('Utilisateur connecté avec Supabase test auth:', user);
+  //   // });
+  //   // this.supabase.auth.signInWithPassword({ email: "1121@myapp.local", password: "123456" }).then((user) => {
+  //   //   console.log('Utilisateur connecté avec Supabase test auth:', user);
+  //   // });
+  //   // if (this.globalService.loginWithUserAndPassword(this.username, this.password) != null) {
+  //   //   this.isConnected = true;
+  //   //   this.appMessage.show(this.username, 0);
+  //   // }
+  // }
+        // Connexion via Supabase, à remplacer par la fonction ci-dessus
+    async loginSupabase(): Promise<void> {
+      //console.log('Tentative de connexion avec Supabase pour', this.code_equipe);
+      //this.appMessage.show('Veuillez remplir les champs utilisateur et mot de passe.', 3000);
+    if (!this.code_equipe || !this.password) {
       this.appMessage.show('Veuillez remplir les champs utilisateur et mot de passe.', 3000);
       return;
     }
 
+    console.log('Tentative de connexion avec loginWithUsername pour', this.code_equipe);
 
-    if (this.globalService.loginWithUserAndPassword(this.username, this.password) != null) {
-      this.isConnected = true;
-      this.appMessage.show(this.username, 0);
-    }
+    this.supabase.auth.signInWithPassword({ email: this.code_equipe + "@myapp.local", password: this.password }).then(({ data, error }) => {
+       if (error) { 
+        console.error("Erreur de connexion :", error.message); 
+        this.appMessage.show('Utilisateur ou mot de passe incorrect.', 3000);
+        return; 
+      }
+       console.log('Utilisateur connecté avec Supabase test auth:', data.user);
+       this.router.navigate(['/matchs']);
+    });
   }
 
+
   async disconnect() {
-    console.log('Déconnexion de', this.username);
+    console.log('Déconnexion de', this.code_equipe);
     this.isConnected = false;
     this.globalService.initEquipeConnectee();
     //this.auth.setConnected(false);

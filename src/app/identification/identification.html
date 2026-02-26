@@ -1,15 +1,15 @@
 <div class="identification-container">
-  @if (isConnected == false) {
+  <!-- @if (isConnected == false) { -->
   <section class="id-card">
     <h3>Connexion</h3>
 
     <p class="muted">Entrez le nom de l'équipe et le mot de passe</p>
-    <form class="login-form" (ngSubmit)="loginWithSupabase()">
+    <form class="login-form" (ngSubmit)="loginSupabase()">
     <!-- Dropdown des équipes -->
     <label class="visually-hidden" for="team">Equipe</label>
-    <select id="team" [(ngModel)]="username" name="username" required>
+    <select id="team" [(ngModel)]="code_equipe" name="code_equipe" required>
         @for (equipe of equipesAll$ | async; track equipe.nom) {
-      <option [value]="equipe.nom">
+      <option [value]="equipe.code">
         {{ equipe.nom }}
       </option>
     }
@@ -22,14 +22,14 @@
       </div>
     </form>
   </section>
-   }
-    @else {
+   <!-- } -->
+    <!-- @else {
     <section class="id-card welcome">
       <h3>Bienvenue</h3>
-      <p class="muted">Vous êtes connecté en tant que <strong>{{username}}</strong></p>
+      <p class="muted">Vous êtes connecté en tant que <strong>{{code_equipe}}</strong></p>
       <div class="actions">
         <button (click)="disconnect()" class="btn-ghost">Déconnexion</button>
       </div>
     </section>
-    }
+    } -->
 </div>

@@ -1,5 +1,5 @@
 // src/app/services/global.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 import { Categorie, Equipe, Match, TClassement, InfosEquipe } from '../../models/models';     // On peut les merger! 
@@ -8,6 +8,9 @@ import { Router } from '@angular/router';
 import { environment } from '../../../src/environments/environment';
 import { Classement } from '../classement/classement';
 import { Resultat } from '../../models/models';
+import { AuthService } from '../services/auth.service';
+import { map, distinctUntilChanged } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'   // disponible partout dans l'app
 })
@@ -44,7 +47,10 @@ export class GlobalService {
   readonly resultats$ = this.resultatsSubject.asObservable();
 
   constructor(
-    private supabase: SupabaseService, private appMessage: AppMessageService, private router: Router
+    private supabase: SupabaseService, 
+    private appMessage: AppMessageService, 
+    private router: Router,
+    private auth: AuthService
   ) { }
 
 
@@ -91,8 +97,18 @@ export class GlobalService {
   }
   // Setter
   setSaison(): void {
+    // On regarde d'abord si la saison est déjà chargée pour éviter de faire une requête inutile
+    let saison = localStorage.getItem('SaisonCourante');
+    isDevMode() && console.log('GlobalService: setSaison, saison chargée du localStorage', saison);
+    if (saison) {
+      this.SaisonCourante = saison;
+      this.getParsedSaison();
+      return;
+    }
+    isDevMode() && console.log('GlobalService: setSaison, aucune saison dans le localStorage, chargement depuis Supabase');
     this.supabase.loginParameter('SaisonCourante').then((data: any) => {
       this.SaisonCourante = data.Valeur;
+      //localStorage.setItem('SaisonCourante', this.SaisonCourante);  // Sauvegarde de la saison dans le localStorage
       this.getParsedSaison(); // This will now emit the new value to subscribers
       this.supabase.loadCategories(this.SaisonCourante).then((data: any) => {
         this.Categories = data;
@@ -116,12 +132,13 @@ export class GlobalService {
     return this.equipesAll$;
   }
 
-  loadMatchsEquipe(): void {
-    this.supabase.loadMatchsEquipe(this.equipeConnectee.code).then((data: Match[]) => {
-      this.matchsSubject.next(data);
-      //console.log('Matchs chargés dans GlobalService :', data);
-    });
-  }
+loadMatchsEquipe(): void {
+       this.supabase.loadMatchsEquipe(this.auth.currentCodeEquipe).then((data: Match[]) => {
+        this.matchsSubject.next(data);
+      });
+
+}
+
 
   getMatchs(): Observable<Match[]> {
     return this.matchs$;

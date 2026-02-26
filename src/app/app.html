@@ -9,8 +9,10 @@
 <nav class="side-menu" aria-hidden="true">
   <ul>
     <li><a routerLink="/" (click)="closeMenu()">Accueil</a></li>
-    @if (isConnected$ | async) {
+    @if (teamName$ | async) {
     <li><a routerLink="/matchs" (click)="closeMenu()">Matchs</a></li>
+    <li><a routerLink="/classement" (click)="closeMenu()">Classement</a></li>
+    <li><a routerLink="/resultats" (click)="closeMenu()">Résultats</a></li>
     <li><a routerLink="/equipes" (click)="closeMenu()">Equipes du club</a></li>
     <li><a routerLink="/connexion" (click)="disconnect(); closeMenu()">Déconnexion</a></li>
     } @else {
@@ -41,7 +43,19 @@
     <router-outlet></router-outlet>
   </main>
 
-  <footer id="app-footer" class="app-footer" [class.visible]="(message$ | async)" aria-live="polite" role="status">
+  <!-- <footer id="app-footer" class="app-footer" [class.visible]="(session$ | async)" aria-live="polite" role="status">
+  <ng-container *ngIf="session$ | async as session"> {{ session?.nom_equipe }} </ng-container>
+  </footer> -->
+
+    <!-- <footer id="app-footer" class="app-footer" [class.visible]="(message$ | async)" aria-live="polite" role="status">
     {{ message$ | async }}
-  </footer>
+  </footer> -->
+  @if (teamName$ | async; as teamName) {
+  <footer 
+        class="app-footer"
+        [class.visible]="teamName">
+  {{ teamName }}
+</footer>
+  }
+
 </div>

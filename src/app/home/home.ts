@@ -12,6 +12,6 @@ export class Home {
   currentUser$!: import('rxjs').Observable<string | null>;
 
   constructor(private auth: AuthService) {
-    this.currentUser$ = this.auth.currentUser$;
+    //this.currentUser$ = this.auth.currentUser$;
   }
 }
