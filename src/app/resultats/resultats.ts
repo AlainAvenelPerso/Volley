@@ -8,11 +8,15 @@ import { from } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { HostListener } from '@angular/core';
-
+import { filter } from 'rxjs/operators';
+import { NavigationEnd } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { AppSession } from '../services/auth.service';
+import { take } from 'rxjs/operators';
 @Component({
   selector: 'app-resultats',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AsyncPipe],
   templateUrl: './resultats.html',
   styleUrl: './resultats.scss',
 })
@@ -26,21 +30,44 @@ export class Resultats {
   startX = 0;
   swipeThreshold: number; // sensibilité (px)
 
-  constructor(private globalService: GlobalService, public router: Router) {
+  constructor(
+    private globalService: GlobalService, 
+    public router: Router,
+    private auth: AuthService) 
+    {
     this.swipeThreshold = this.globalService.swipeThreshold;    // récupérer la sensibilité depuis le service global
   }
 
   ngOnInit(): void {
     console.log("Resultats page initialized");
-    this.globalService.loadResultats(96);
+        this.auth.session$.pipe(take(1)).subscribe(session => {
+      if (session.code_equipe) {
+        console.log("Une équipe est connectée :", session.nom_equipe);
+        this.globalService.loadResultats(session.code_categorie ?? 0);     // DEBUG a corriger
+      } else {
+        console.log("Aucune équipe connectée");
+      }
+    });
+    
+
+    // Recharge immédiatement à l'arrivée sur la page 
+    
+
+this.router.events
+  .pipe(filter(event => event instanceof NavigationEnd))
+  .subscribe((event: NavigationEnd) => {
+    if (event.urlAfterRedirects === '/resultats') {
+      this.globalService.loadResultats(96);
+    }
+  });
 
 
-    this.resultats$ = from(this.globalService.getResultats()).pipe(
+    this.resultats$ = this.globalService.getResultats().pipe(
       tap(resultats => {
         console.log("Résultats bruts :", resultats);
 
-
-
+ if (!Array.isArray(resultats) || resultats.length === 0) { console.warn("Aucun résultat reçu → en attente de données"); return; }
+ 
         const min = Math.min(...resultats.map(r => r.Equipe_Domicile));
         const max = Math.max(...resultats.map(r => r.Equipe_Domicile));
 
@@ -73,7 +100,9 @@ export class Resultats {
             this.equipesMap[nom] = {
               Nom_Equipe: nom,
               index: mapping[r.Equipe_Domicile],
-              valeurs: {}
+              valeurs: {},
+              SD: 0,
+              SE: 0
             };
           }
 
@@ -92,7 +121,7 @@ export class Resultats {
 
 
     );
-    this.resultats$.subscribe();
+    this.resultats$.subscribe();      // Besoin de ça pour déclencher le tap et voir les logs, sinon le tableau reste vide en attendant les données
 
     console.log("Resultats observable set up:", this.resultats$);
   }
@@ -104,12 +133,12 @@ export class Resultats {
     return `${ED}-${EE}`;
   }
 
-  onCellClick(indexLigne: number, indexColonne: number): void {
+  onCellClick(indexLigne: number, indexColonne: number, valeur: string): void {
 
     const ED = this.inverseMapping[indexLigne];   // vrai numéro équipe ligne
     const EE = this.inverseMapping[indexColonne]; // vrai numéro équipe colonne
 
-    console.log("VRAIS numéros :", ED, EE);
+    console.log("VRAIS numéros :", ED, EE, valeur);
 
     this.router.navigate(['/detailmatch'], { state: { ED: ED, EE: EE } });
   }

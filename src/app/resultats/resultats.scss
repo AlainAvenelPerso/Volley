@@ -1,7 +1,14 @@
-/* Wrapper scrollable */
+.tableau-outer {
+  min-height: calc(100vh - 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Celui-ci garde le scroll horizontal */
 .tableau-wrapper {
-  width: 100%;
   overflow-x: auto;
+  width: 100%;
 }
 
 /* Tableau */

@@ -144,15 +144,30 @@ loadMatchsEquipe(): void {
     return this.matchs$;
   }
 
-  loadScoreMatch(Lieu: string, CodeAdversaire: number): void {
+  // loadScoreMatch(Lieu: string, CodeAdversaire: number): void {
+  //   if (Lieu == "D")
+  //     this.supabase.loadScoreMatch(this.equipeConnectee.code, CodeAdversaire).then((data: any) => {
+  //       console.log('Score chargé dans GlobalService :', data);
+  //       this.scoreMatchSubject.next(data);
+  //       // Traiter les données du score ici si nécessaire
+  //     });
+  //   else
+  //     this.supabase.loadScoreMatch(CodeAdversaire, this.equipeConnectee.code).then((data: any) => {
+  //       console.log('Score chargé dans GlobalService :', data);
+  //       this.scoreMatchSubject.next(data);
+  //       // Traiter les données du score ici si nécessaire
+  //     });
+  // }
+
+    loadScoreMatch(Lieu: string, CodeConnectée : number, CodeAdversaire: number): void {
     if (Lieu == "D")
-      this.supabase.loadScoreMatch(this.equipeConnectee.code, CodeAdversaire).then((data: any) => {
+      this.supabase.loadScoreMatch(CodeConnectée, CodeAdversaire).then((data: any) => {
         console.log('Score chargé dans GlobalService :', data);
         this.scoreMatchSubject.next(data);
         // Traiter les données du score ici si nécessaire
       });
     else
-      this.supabase.loadScoreMatch(CodeAdversaire, this.equipeConnectee.code).then((data: any) => {
+      this.supabase.loadScoreMatch(CodeAdversaire, CodeConnectée).then((data: any) => {
         console.log('Score chargé dans GlobalService :', data);
         this.scoreMatchSubject.next(data);
         // Traiter les données du score ici si nécessaire
@@ -174,9 +189,9 @@ loadMatchsEquipe(): void {
     return this.isConnected$;
   }
 
-  initEquipeConnectee(): void {
-    this.equipeConnectee = new Equipe(0, '', 0, ''); // réinitialiser
-  }
+  // initEquipeConnectee(): void {
+  //   this.equipeConnectee = new Equipe(0, '', 0, ''); // réinitialiser
+  // }
 
 
   loadCategories(saison: string): void {
@@ -273,7 +288,9 @@ loadMatchsEquipe(): void {
     return this.informationEquipe$;
   }
 
-  loadResultats(codeCategorie: number){
+  loadResultats(codeCategorie: number): void {
+
+    console.log("GlobalService: loadResultats pour codeCategorie", codeCategorie);
     this.supabase.loadResultats(codeCategorie).then((data: Resultat[]) => {
       this.resultatsSubject.next(data);
       console.log('Résultats chargés dans GlobalService :', data);

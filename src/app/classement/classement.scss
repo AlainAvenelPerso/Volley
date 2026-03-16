@@ -1,3 +1,9 @@
+.tableau-outer {
+  min-height: calc(100vh - 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .classement {
     text-align: center;

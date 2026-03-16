@@ -21,7 +21,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { filter, take } from 'rxjs/operators';
 import { DialogService } from '../services/dialog.service';
 import { Location } from '@angular/common'
-
+import { AppSession, AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-detail-match',
@@ -66,6 +66,7 @@ export class DetailMatch {
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
     private dialogService: DialogService,
+    private auth: AuthService,
     private location: Location) {
     const navigation = this.router.currentNavigation();
     const state = navigation?.extras.state as {
@@ -84,20 +85,15 @@ export class DetailMatch {
     this.form = this.fb.group({
       tableau: this.fb.array(this.creerTableau(5, 2))
     });
-  }
-
-  ngOnInit(): void {
-
-
-    console.log("paramètres reçus :", this.Lieu, this.codeAdversaire, this.ScoreArray);
-    this.nomEquipeConnectee = this.globalService.getEquipeConnectee().nom;
-    this.codeEquipeConnectee = this.globalService.getEquipeConnectee().code;
-
-    console.log("Params équipes :", this.codeEquipeConnectee, this.codeAdversaire);
-    if (this.ScoreArray[0] != null) {   // Score déjà saisi mais on ne reçoit que le score
-      this.iVisibleSlider = this.ScoreArray[0] + this.ScoreArray[1] + 1;
-      this.globalService.loadScoreMatch(this.Lieu, Number(this.codeAdversaire));
+    if (state.ED != null && state.EE != null) {
+      this.globalService.loadScoreMatch('D', state.ED, state.EE);   // Chargement du score du match pour l'équipe D, on recevra le score dans match$ et on pourra initialiser les sets
       this.match$ = this.globalService.getScoreMatch();
+    }
+    else{
+            this.iVisibleSlider = this.ScoreArray[0] + this.ScoreArray[1] + 1;
+      this.globalService.loadScoreMatch(this.Lieu, this.codeEquipeConnectee, Number(this.codeAdversaire));
+      this.match$ = this.globalService.getScoreMatch();
+    }
 
       this.match$.pipe(filter(score => score !== null), // ignore la valeur initiale 
         take(1)   // ne prend qu’un seul score 
@@ -108,7 +104,12 @@ export class DetailMatch {
             return; // Ne rien faire si score est null ou undefined 
 
           this.match = score;
+
+          this.iVisibleSlider = this.match.Sets_Domicile + this.match.Sets_Exterieur + 1;
+
           console.log('Score reçu :', this.match);
+          this.ScoreArray[0] = this.match.Sets_Domicile;
+          this.ScoreArray[1] = this.match.Sets_Exterieur;
           if (this.match.VE == true && this.match.VD == true) {   // Score déjà validé par les 2 équipes
             this.bScoreDejaValideParTous = true;
             this.bScoreModifiable = false;   // Score non modifiable
@@ -131,7 +132,65 @@ export class DetailMatch {
           this.bValidScore = true;      // On part du principe que le score est valide
           console.log('Sets initialisés à :', this.sets);
         });
-    }
+    
+  }
+
+  ngOnInit(): void {
+    //console.log("paramètres reçus :",  this.Lieu, this.codeAdversaire, this.ScoreArray);
+//   this.auth.session$.pipe(take(1)).subscribe(session => {
+//   if (session.code_equipe) {
+//     console.log("Une équipe est connectée :", session.nom_equipe, session.code_equipe);
+//     //  this.nomEquipeConnectee = this.globalService.getEquipeConnectee().nom;
+//     // this.codeEquipeConnectee = this.globalService.getEquipeConnectee().code;
+//      this.nomEquipeConnectee = session.nom_equipe?.toString() ?? "";
+//     this.codeEquipeConnectee = session.code_equipe;
+//     console.log("Params équipes :", this.codeEquipeConnectee, this.codeAdversaire);
+//     if (this.ScoreArray[0] != null) {   // Score déjà saisi mais on ne reçoit que le score
+//       this.iVisibleSlider = this.ScoreArray[0] + this.ScoreArray[1] + 1;
+//       this.globalService.loadScoreMatch(this.Lieu, this.codeEquipeConnectee, Number(this.codeAdversaire));
+//       this.match$ = this.globalService.getScoreMatch();
+
+//       this.match$.pipe(filter(score => score !== null), // ignore la valeur initiale 
+//         take(1)   // ne prend qu’un seul score 
+//       )
+//         .subscribe(score => {
+//           //console.log("subscribe activé");
+//           if (!score)
+//             return; // Ne rien faire si score est null ou undefined 
+
+//           this.match = score;
+//           console.log('Score reçu :', this.match);
+//           if (this.match.VE == true && this.match.VD == true) {   // Score déjà validé par les 2 équipes
+//             this.bScoreDejaValideParTous = true;
+//             this.bScoreModifiable = false;   // Score non modifiable
+//           }
+//           else if ((this.Lieu == "D" && this.match.VE == true) || (this.Lieu == "E" && this.match.VD == true)
+//           ) {
+//             this.bScoreModifiable = false;   // Score non modifiable
+//             console.log('Score non modifiable');
+//           }
+//           else {
+//             this.bScoreModifiable = true;    // Score modifiable : On le fait en dépit du defaut car on passe ici d'abord
+//             console.log('Score modifiable');
+//           }
+//           //console.log('iVisibleSlider défini à :', this.iVisibleSlider);
+//           for (let i = 0; i < this.iVisibleSlider - 1; i++) {       // Récupère le score déjà saisi
+//             if (!this.sets[i]) { this.sets[i] = [0, 0]; }
+//             this.sets[i][0] = (this.match as any)[`S${i + 1}D`];
+//             this.sets[i][1] = (this.match as any)[`S${i + 1}E`];
+//           }
+//           this.bValidScore = true;      // On part du principe que le score est valide
+//           console.log('Sets initialisés à :', this.sets);
+//         });
+//     }
+//   } else {
+//     console.log("Aucune équipe connectée");
+//   }
+// });
+
+
+   
+   
   }
 
   onScoreChange(i: number, colonne: number, value: string) {

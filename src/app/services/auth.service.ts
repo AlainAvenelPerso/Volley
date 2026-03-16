@@ -7,6 +7,7 @@ export interface AppSession {
   token: string | null;
   code_equipe: string | null;
   nom_equipe: string | null;
+  code_categorie: number | null;
 }
 
 
@@ -23,7 +24,8 @@ export class AuthService {
     user: null,
     token: null,
     code_equipe: null,
-    nom_equipe: null
+    nom_equipe: null,
+    code_categorie: null
   });
 
   constructor(private supabase: SupabaseClient) {
@@ -50,7 +52,8 @@ export class AuthService {
         user: null,
         token: null,
         code_equipe: null,
-        nom_equipe: null
+        nom_equipe: null,
+        code_categorie: null
       });
       //this._currentUser$.next(null);
       return;
@@ -64,7 +67,7 @@ export class AuthService {
     // 3) Charger les infos d'équipe
     const { data: equipe } = await this.supabase
       .from('Equipes')
-      .select('Code_Equipe, Nom_Equipe')
+      .select('Code_Equipe, Nom_Equipe, Code_Categorie')
       .eq('Code_Equipe', nom)
       .single();
 
@@ -73,7 +76,8 @@ export class AuthService {
       user,
       token,
       code_equipe: equipe?.Code_Equipe ?? null,
-      nom_equipe: equipe?.Nom_Equipe ?? null
+      nom_equipe: equipe?.Nom_Equipe ?? null,
+      code_categorie: equipe?.Code_Categorie ?? null
     });
 
     //this._currentUser$.next(user?.email || null);

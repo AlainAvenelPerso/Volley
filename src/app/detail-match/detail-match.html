@@ -37,7 +37,7 @@
   <!-- Values : {{ sets | json }} <BR> -->
 
   @if (bScoreModifiable == true) {
-    @if (sets != []){
+    @if (sets.length > 0) {
       @for (i of [1,2,3,4,5]; track i) {
         @if (i < iVisibleSlider) { 
           <button class="bouton" (click)="augmenteScore(i, 0)">+</button>

@@ -1,3 +1,6 @@
+<div class="tableau-outer">
+  <!-- Utilisé pour centrer sans casser le swipe -->
+
 <div class="tableau-wrapper">
 
   <table class="tableau-resultats">
@@ -20,7 +23,7 @@
 
           <!-- Colonne équipe sticky -->
           <td class="col-equipe">
-            {{ ligne.Nom_Equipe }}
+            {{i+1}}-{{ ligne.Nom_Equipe }}
           </td>
 
           <!-- Colonnes de scores -->
@@ -31,7 +34,7 @@
             <td class="score-cell"
                 [class.diagonale]="col === i + 1"
                 [class.clickable]="isClickable"
-                (click)="isClickable ? onCellClick(ligne.index, col) : null">
+                (click)="isClickable ? onCellClick(ligne.index, col, ligne.valeurs[col] ) : null">
 
               @if (isClickable) {
                 {{ ligne.valeurs[col] }}
@@ -49,4 +52,5 @@
 
   </table>
 
+</div>
 </div>

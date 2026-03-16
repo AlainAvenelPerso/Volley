@@ -84,7 +84,7 @@ export class IdentificationComponent {
   async disconnect() {
     console.log('Déconnexion de', this.code_equipe);
     this.isConnected = false;
-    this.globalService.initEquipeConnectee();
+    //this.globalService.initEquipeConnectee();
     //this.auth.setConnected(false);
     // Clear persistent footer message on disconnect
     this.appMessage.clear();
