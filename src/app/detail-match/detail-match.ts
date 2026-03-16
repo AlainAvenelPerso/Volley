@@ -71,7 +71,7 @@ export class DetailMatch {
     const navigation = this.router.currentNavigation();
     const state = navigation?.extras.state as {
       Lieu: string; CA: string; NA: string, DM: string, SD: number, SE: number
-      , ED: number, EE: number // Valeurs venant de Resultats 
+      , ED: number, EE: number, NED : string, NEE : string // Valeurs venant de Resultats 
 
     };
     console.log('State reçu dans le constructeur :', state);
@@ -86,6 +86,11 @@ export class DetailMatch {
       tableau: this.fb.array(this.creerTableau(5, 2))
     });
     if (state.ED != null && state.EE != null) {
+      this.nomEquipeConnectee = state.NED;      // Nom équipe domicile
+      this.nomAdversaire = state.NEE;         // Nom équipe extérieure
+      this.Lieu = "D";   // On a l'info directement, donc on affiche dans le bon sens
+      this.codeEquipeConnectee = state.ED;     // Code équipe domicile
+      this.codeAdversaire = state.EE;         // Code équipe extérieure
       this.globalService.loadScoreMatch('D', state.ED, state.EE);   // Chargement du score du match pour l'équipe D, on recevra le score dans match$ et on pourra initialiser les sets
       this.match$ = this.globalService.getScoreMatch();
     }

@@ -53,13 +53,13 @@ export class Resultats {
     // Recharge immédiatement à l'arrivée sur la page 
     
 
-this.router.events
-  .pipe(filter(event => event instanceof NavigationEnd))
-  .subscribe((event: NavigationEnd) => {
-    if (event.urlAfterRedirects === '/resultats') {
-      this.globalService.loadResultats(96);
-    }
-  });
+// this.router.events
+//   .pipe(filter(event => event instanceof NavigationEnd))
+//   .subscribe((event: NavigationEnd) => {
+//     if (event.urlAfterRedirects === '/resultats') {
+//       this.globalService.loadResultats(96);
+//     }
+//   });
 
 
     this.resultats$ = this.globalService.getResultats().pipe(
@@ -138,9 +138,9 @@ this.router.events
     const ED = this.inverseMapping[indexLigne];   // vrai numéro équipe ligne
     const EE = this.inverseMapping[indexColonne]; // vrai numéro équipe colonne
 
-    console.log("VRAIS numéros :", ED, EE, valeur);
+    console.log("VRAIS numéros :", ED, EE, indexLigne, indexColonne, this.lignesTableau);
 
-    this.router.navigate(['/detailmatch'], { state: { ED: ED, EE: EE } });
+    this.router.navigate(['/detailmatch'], { state: { ED: ED, EE: EE, NED: this.lignesTableau[indexLigne - 1]?.Nom_Equipe, NEE: this.lignesTableau[indexColonne - 1]?.Nom_Equipe } });
   }
 
   @HostListener('window:pointerdown', ['$event'])
