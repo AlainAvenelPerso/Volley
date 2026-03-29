@@ -23,14 +23,14 @@ export class Classement {
   }
 
   ngOnInit(): void {
-    this.globalService.chargeClassementCategorie(97);
+    this.globalService.chargeClassementCategorie(98);       // DEBUG 
     this.Classement$ = this.globalService.getClassementCategorie();
 
     this.Classement$.subscribe(c => {
-      console.log('Classement reçu dans le composant:', c);
+      //console.log('Classement reçu dans le composant:', c);
       this.classement = c;
     });
-    console.log('Composant Classement initialisé.', this.classement);
+    //console.log('Composant Classement initialisé.', this.classement);
   }
 
   @HostListener('window:pointerdown', ['$event'])

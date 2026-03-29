@@ -6,7 +6,7 @@ import { min } from 'rxjs';
 import { Categorie, Equipe, InfosEquipe, Joueur } from '../../models/models';
 import type { Gymnase, TClassement } from '../../models/models';
 
-const POINT_GAGNANT = 3;      // 3 points pour une victoire
+const POINT_GAGNANT = 2;      // 2 points pour une victoire
 const POINT_PERDANT = 1       // 1 point pour une défaite
 
 @Injectable({ providedIn: 'root' })
@@ -593,7 +593,7 @@ async loadNomEquipe(id: string) {
       }
 
       if (data) {
-        console.log('Classement récupéré pour la catégorie', CodeCategorie, data);
+        console.log('Equipes récupérées pour la catégorie', CodeCategorie, data);
 
         const TabEquipes: TClassement[] = [];
 
@@ -615,6 +615,7 @@ async loadNomEquipe(id: string) {
         console.log('Tableau du classement construit :', TabEquipes);
 
         const Nb = TabEquipes.length;
+        const minNumEquipe = Math.min(...data.map(e => e.Code_Equipe));   // Récupère le code de l'équipe la plus basse pour calculer les index des adversaires
 
         for (let i = 0; i < Nb; i++) {
           const equipe = TabEquipes[i].codeEquipe;
@@ -632,33 +633,42 @@ async loadNomEquipe(id: string) {
             continue;
           }
 
-          //console.log('Matchs à domicile récupérés pour l\'équipe', equipe, matchs);
-          for (const m of matchs) {
-            const EquipExtIndex =
-              m.Equipe_Exterieure - m['Equipe_Exterieure'] + Nb - 1;
+          console.log('Matchs à domicile récupérés pour l\'équipe', equipe, matchs);
 
+          for (const m of matchs) {
+
+            console.log('Traitement du match domicile :', m);
+            const EquipExtIndex = m.Equipe_Exterieure - minNumEquipe;   // Calcule l'index de l'équipe extérieure dans le tableau du classement);
+            console.log('Index de l\'équipe extérieure dans le classement :', EquipExtIndex);
             const SD = m.Sets_Domicile;
             const SE = m.Sets_Exterieur;
 
+            let deltaSets = 0;
             let deltaPoints = 0;
             let forfait = "";
-            const gagnant = this.chercheGagnantPoints(m, "D", "E", (d) => {
-              //console.log('Delta points domicile trouvé d:', d);
+            const gagnant = this.chercheGagnantPoints(m, "D", "E", (s) => {
+              deltaSets = s;
+              console.log('Delta sets domicile trouvé s:', s);
+            }, (d) => {
+              console.log('Delta points domicile trouvé d:', d);
               deltaPoints = d;
             }, (f) => {
-              //console.log('Delta points domicile trouvé f:', f);
+              console.log('Delta points domicile trouvé f:', f);
               forfait = f;
             });
-            //console.log('Gagnant du match:', gagnant, 'forfait:', forfait);
-            if (SD !== 0 || SE !== 0) {
+            console.log('Gagnant du match:', gagnant, 'forfait:', forfait);
+            //if (SD !== 0 || SE !== 0) {
+            if (gagnant)
+              {
               // Match joué
               TabEquipes[i].nbJoues += 1;
               TabEquipes[EquipExtIndex].nbJoues += 1;
 
-              if (gagnant === "D") {
+              if (gagnant === "D")
+                {
                 // Victoire domicile
                 TabEquipes[i].points += POINT_GAGNANT;
-                TabEquipes[i].gas += SD - SE;
+                TabEquipes[i].gas += deltaSets;
                 TabEquipes[i].gap += deltaPoints;
                 TabEquipes[i].nbGagnes += 1;
 
@@ -669,27 +679,36 @@ async loadNomEquipe(id: string) {
                   TabEquipes[EquipExtIndex].nbPerdus += 1;
                 }
 
-                TabEquipes[EquipExtIndex].gas -= SD - SE;
+                TabEquipes[EquipExtIndex].gas -= deltaSets;
                 TabEquipes[EquipExtIndex].gap -= deltaPoints;
-              } else if (gagnant === "E") {
+                } 
+              else if (gagnant === "E") 
+                {
                 // Victoire extérieure
-                if (forfait === "D") {
+                if (forfait === "D") 
+                  {
                   TabEquipes[i].nbForfaits += 1;
-                } else {
+                  } 
+                else 
+                  {
                   TabEquipes[i].points += POINT_PERDANT;
                   TabEquipes[i].nbPerdus += 1;
-                }
+                  }
 
-                TabEquipes[i].gas -= SE - SD;
+                TabEquipes[i].gas += deltaSets;
                 TabEquipes[i].gap += deltaPoints;
 
                 TabEquipes[EquipExtIndex].points += POINT_GAGNANT;
-                TabEquipes[EquipExtIndex].gas += SE - SD;
+                TabEquipes[EquipExtIndex].gas -= deltaSets;
                 TabEquipes[EquipExtIndex].gap -= deltaPoints;
                 TabEquipes[EquipExtIndex].nbGagnes += 1;
               }
             }
+
+
           }
+              //         if (i == 0)      // Pour voir un exemple de classement après le traitement de l'équipe i
+              // return TabEquipes;
         }
 
 
@@ -755,12 +774,17 @@ async loadNomEquipe(id: string) {
     match: any,
     L1: "D" | "E",
     L2: "D" | "E",
+    setDeltaSets: (s: number) => void,
     setDeltaPoints: (d: number) => void,
     setForfait: (f: "D" | "E" | "") => void
   ): "D" | "E" | null {
     //console.log('chercheGagnantPoints appelé avec match:', match, L1, L2);
     if (match.Sets_Domicile === null)
+    {
+      //console.log('Match sans score trouvé :', match);
+
       return null; // Pas de score, pas de gagnant
+    }
     let PD = 0; // Points domicile
     let PE = 0; // Points extérieur
     let forfait: "D" | "E" | "" = "";
@@ -784,8 +808,8 @@ async loadNomEquipe(id: string) {
     const deltaPoints = PD - PE;
     setDeltaPoints(deltaPoints);
 
-    const deltaSets =
-      match.Sets_Domicile - match.Sets_Exterieur;
+    const deltaSets = match.Sets_Domicile - match.Sets_Exterieur;
+    setDeltaSets(deltaSets);
 
     if (deltaSets > 0) return "D"; // Victoire domicile
     if (deltaSets < 0) return "E"; // Victoire extérieur
