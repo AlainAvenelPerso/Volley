@@ -1,8 +1,8 @@
 .centre {
     text-align: center;
+    width: 50%;
+    margin: 0 auto;
 }
-
-
 
 .example-margin {
   margin: 8px;
@@ -26,10 +26,37 @@
   vertical-align: middle;
 }
 
+.boutonAjouterSet {
+  padding: 2px 6px;
+  margin: 5px;
+  min-width: 30px;
+  height: 28px;
+  line-height: 1;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.ligne-date-report {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.champ-date-report {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 button:disabled {
   background-color: #ccc;   /* gris clair */
   color: #666;              /* texte gris */
   cursor: not-allowed;      /* curseur barré */
   opacity: 0.7;             /* effet visuel */
 }
+
 

@@ -1,0 +1,49 @@
+.tableau-outer {
+  padding: 12px;
+}
+
+.titre-planning {
+  color: #fff;
+  margin: 12px 0;
+}
+
+.message-global {
+  color: #fff;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.tableau-wrapper {
+  overflow-x: auto;
+}
+
+.planning-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.planning-table td,
+.planning-table th {
+  background-color: #fff;
+  color: #222;
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+
+.planning-table td.dom {
+  background-color: #d7e9ff;
+  color: #0b3d91;
+  font-weight: bold;
+}
+
+.planning-table td.ext {
+  background-color: #ffe0e0;
+  color: #a10000;
+  font-weight: bold;
+}
+
+.planning-table td.total-domext {
+  font-weight: bold;
+}

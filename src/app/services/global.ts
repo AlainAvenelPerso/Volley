@@ -1,5 +1,5 @@
 // src/app/services/global.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 import { Categorie, Equipe, Match, TClassement, InfosEquipe } from '../../models/models';     // On peut les merger! 
@@ -8,6 +8,9 @@ import { Router } from '@angular/router';
 import { environment } from '../../../src/environments/environment';
 import { Classement } from '../classement/classement';
 import { Resultat } from '../../models/models';
+import { AuthService } from '../services/auth.service';
+import { map, distinctUntilChanged } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'   // disponible partout dans l'app
 })
@@ -44,7 +47,10 @@ export class GlobalService {
   readonly resultats$ = this.resultatsSubject.asObservable();
 
   constructor(
-    private supabase: SupabaseService, private appMessage: AppMessageService, private router: Router
+    private supabase: SupabaseService, 
+    private appMessage: AppMessageService, 
+    private router: Router,
+    private auth: AuthService
   ) { }
 
 
@@ -91,8 +97,18 @@ export class GlobalService {
   }
   // Setter
   setSaison(): void {
+    // On regarde d'abord si la saison est déjà chargée pour éviter de faire une requête inutile
+    let saison = localStorage.getItem('SaisonCourante');
+    isDevMode() && console.log('GlobalService: setSaison, saison chargée du localStorage', saison);
+    if (saison) {
+      this.SaisonCourante = saison;
+      this.getParsedSaison();
+      return;
+    }
+    isDevMode() && console.log('GlobalService: setSaison, aucune saison dans le localStorage, chargement depuis Supabase');
     this.supabase.loginParameter('SaisonCourante').then((data: any) => {
       this.SaisonCourante = data.Valeur;
+      //localStorage.setItem('SaisonCourante', this.SaisonCourante);  // Sauvegarde de la saison dans le localStorage
       this.getParsedSaison(); // This will now emit the new value to subscribers
       this.supabase.loadCategories(this.SaisonCourante).then((data: any) => {
         this.Categories = data;
@@ -116,26 +132,43 @@ export class GlobalService {
     return this.equipesAll$;
   }
 
-  loadMatchsEquipe(): void {
-    this.supabase.loadMatchsEquipe(this.equipeConnectee.code).then((data: Match[]) => {
-      this.matchsSubject.next(data);
-      //console.log('Matchs chargés dans GlobalService :', data);
-    });
-  }
+loadMatchsEquipe(): Promise<void> {
+       return this.supabase.loadMatchsEquipe(this.auth.currentCodeEquipe).then((data: Match[]) => {
+        this.matchsSubject.next(data);
+      });
+
+}
+
 
   getMatchs(): Observable<Match[]> {
     return this.matchs$;
   }
 
-  loadScoreMatch(Lieu: string, CodeAdversaire: number): void {
+  // loadScoreMatch(Lieu: string, CodeAdversaire: number): void {
+  //   if (Lieu == "D")
+  //     this.supabase.loadScoreMatch(this.equipeConnectee.code, CodeAdversaire).then((data: any) => {
+  //       console.log('Score chargé dans GlobalService :', data);
+  //       this.scoreMatchSubject.next(data);
+  //       // Traiter les données du score ici si nécessaire
+  //     });
+  //   else
+  //     this.supabase.loadScoreMatch(CodeAdversaire, this.equipeConnectee.code).then((data: any) => {
+  //       console.log('Score chargé dans GlobalService :', data);
+  //       this.scoreMatchSubject.next(data);
+  //       // Traiter les données du score ici si nécessaire
+  //     });
+  // }
+
+    loadScoreMatch(Lieu: string, CodeConnectée : number, CodeAdversaire: number): void {
+    this.scoreMatchSubject.next(null);
     if (Lieu == "D")
-      this.supabase.loadScoreMatch(this.equipeConnectee.code, CodeAdversaire).then((data: any) => {
+      this.supabase.loadScoreMatch(CodeConnectée, CodeAdversaire).then((data: any) => {
         console.log('Score chargé dans GlobalService :', data);
         this.scoreMatchSubject.next(data);
         // Traiter les données du score ici si nécessaire
       });
     else
-      this.supabase.loadScoreMatch(CodeAdversaire, this.equipeConnectee.code).then((data: any) => {
+      this.supabase.loadScoreMatch(CodeAdversaire, CodeConnectée).then((data: any) => {
         console.log('Score chargé dans GlobalService :', data);
         this.scoreMatchSubject.next(data);
         // Traiter les données du score ici si nécessaire
@@ -157,9 +190,9 @@ export class GlobalService {
     return this.isConnected$;
   }
 
-  initEquipeConnectee(): void {
-    this.equipeConnectee = new Equipe(0, '', 0, ''); // réinitialiser
-  }
+  // initEquipeConnectee(): void {
+  //   this.equipeConnectee = new Equipe(0, '', 0, ''); // réinitialiser
+  // }
 
 
   loadCategories(saison: string): void {
@@ -180,9 +213,10 @@ export class GlobalService {
 
   // Chargement des équipes du club
   loadEquipes(): void {
-    this.supabase.loadEquipesClub(this.equipeConnectee.nom, this.Categories).then((data: Equipe[]) => {
+    const nomEquipeConnectee = this.equipeConnectee.nom || this.auth.current.nom_equipe || '';
+    this.supabase.loadEquipesClub(nomEquipeConnectee, this.Categories).then((data: Equipe[]) => {
       this.equipesSubject.next(data);
-      console.log('Equipes chargées dans GlobalService pour :', this.equipeConnectee.nom, data);
+      console.log('Equipes chargées dans GlobalService pour :', nomEquipeConnectee, data);
     });
   }
 
@@ -197,9 +231,7 @@ export class GlobalService {
 
   // On consomme la poule sélectionnée quand on vient de la page poule, on remet la valeur à null après
   getPouleSelected(): number {
-    const poule = this.pouleSelected;
-    this.pouleSelected = 0;
-    return poule;
+    return this.pouleSelected;
   }
 
   loadEquipesPoule(codeCategorie: number): void {
@@ -230,6 +262,13 @@ export class GlobalService {
     });
   }
 
+  reporterMatch(Lieu: string, ED: number, EE: number, nouvelleDate: string): Promise<void> {
+    this.logDebug('GlobalService: reporterMatch', Lieu, ED, EE, nouvelleDate);
+    return this.supabase.reporterMatch(Lieu, ED, EE, nouvelleDate).then(() => {
+      console.log('Match reporté avec succès');
+    });
+  }
+
   chargeClassementCategorie(codeCategorie: number): Promise<any> {
     return this.supabase.chargeClassementCategorie(codeCategorie).then((data: TClassement[]) => {
       this.classementSubject.next(data);
@@ -256,7 +295,9 @@ export class GlobalService {
     return this.informationEquipe$;
   }
 
-  loadResultats(codeCategorie: number){
+  loadResultats(codeCategorie: number): void {
+
+    console.log("GlobalService: loadResultats pour codeCategorie", codeCategorie);
     this.supabase.loadResultats(codeCategorie).then((data: Resultat[]) => {
       this.resultatsSubject.next(data);
       console.log('Résultats chargés dans GlobalService :', data);

@@ -1,7 +1,19 @@
-/* Wrapper scrollable */
+.tableau-outer {
+  min-height: calc(100vh - 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tableau-inner {
+  display: block;
+  max-width: 100%;
+}
+
+/* Celui-ci garde le scroll horizontal */
 .tableau-wrapper {
-  width: 100%;
   overflow-x: auto;
+  width: 100%;
 }
 
 /* Tableau */
@@ -12,45 +24,68 @@
   margin: 0 auto;
 }
 
+.total-matchs {
+  width: 100%;
+  text-align: center;
+  color: #e2e8f0;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
 /* Cellules générales */
 .tableau-resultats th,
 .tableau-resultats td {
   padding: 6px 8px;
-  border: 1px solid #ddd;
+  border: 1px solid #1e3a8a;
   text-align: center;
-  color: #000;
-  background-color: #fff; /* évite le noir sur noir */
+  color: #fff;
+  background-color: transparent;
 }
 
 /* Alternance de lignes */
 .tableau-resultats tbody tr:nth-child(odd) {
-  background-color: #fafafa;
+  background-color: #1d4ed8;
 }
 
 .tableau-resultats tbody tr:nth-child(even) {
-  background-color: #eaeaea;
+  background-color: #2563eb;
+}
+
+.tableau-resultats tbody tr:nth-child(odd) td {
+  background-color: #1d4ed8;
+}
+
+.tableau-resultats tbody tr:nth-child(even) td {
+  background-color: #2563eb;
 }
 
 /* Surbrillance au survol */
 .tableau-resultats tbody tr:hover td:not(.diagonale):not(.col-equipe) {
-  background-color: #d6eaff !important;
+  background-color: #3b82f6 !important;
 }
 
 /* Colonne équipe sticky */
 .col-equipe {
   position: sticky;
   left: 0;
-  background-color: #fff;
+  background-color: #1e40af;
   font-weight: 600;
   white-space: nowrap;
   z-index: 5;
   text-align: left;
+  box-shadow: inset -1px 0 0 #1e3a8a;
 }
 
 /* Header simple (non sticky pour éviter les bugs de scroll) */
 .tableau-resultats thead tr {
-  background-color: #f2f2f2;
+  background-color: #1e3a8a;
   font-weight: 600;
+}
+
+/* Cellule "Équipe" du header : au-dessus des colonnes qui défilent */
+.tableau-resultats thead th.col-equipe {
+  background-color: #1e3a8a;
+  z-index: 6;
 }
 
 /* Colonnes de scores */
@@ -59,28 +94,28 @@
   white-space: nowrap;
   padding-left: 0;
   padding-right: 0;
-  background-color: #fff;
-  color: #000;
+  background-color: transparent;
+  color: #fff;
 }
 
 /* Diagonale grisée */
 .tableau-resultats td.diagonale {
-  background-color: #d0d0d0 !important;
-  color: #555;
+  background-color: #1e3a8a !important;
+  color: #93c5fd;
   font-style: italic;
 }
 
 .tableau-resultats tr:hover td.diagonale {
-  background-color: #c4c4c4 !important;
+  background-color: #1e40af !important;
 }
 
 /* Cellules cliquables */
 .tableau-resultats td.clickable {
   cursor: pointer;
-  background-color: #f0f8ff;
+  background-color: #2563eb;
 }
 
 .tableau-resultats td.clickable:hover {
-  background-color: #d6eaff;
+  background-color: #3b82f6;
 }
 

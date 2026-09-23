@@ -90,7 +90,7 @@ export type TClassement = {
 export type Joueur = {
 Nom: string;
 Prenom: string;
-Mail1: string;
+Mail: string;
 TelPortable: string;
 };
 
@@ -118,3 +118,47 @@ export type Resultat = {
   Sets_Domicile: number;
   Sets_Exterieur: number;
 }
+
+export type LigneImportEquipe = {
+  poule: string;
+  equipe: string;
+  prenomCapitaine: string;
+  nomCapitaine: string;
+  mailCapitaine: string;
+  numeroGymnase: number;
+  jourMatch: string;
+  horaireMatch: string;
+};
+
+export type ResultatImport = {
+  equipe: string;
+  statut: 'créée' | 'existante' | 'erreur';
+  message: string;
+};
+
+export type CalendrierEquipe = {
+  code: number;
+  rang: number;           // indice local dans la poule (1..N)
+  nom: string;
+  gymnase: Gymnase | null;
+  commune: string;
+  jourMatch: string;
+  heuresMatch: string;
+};
+
+export type CalendrierRencontre = {
+  domicile: number;       // indice local de l'équipe qui reçoit
+  exterieur: number;      // indice local de l'équipe visiteuse
+  joue: boolean;          // le match a-t-il un score ?
+};
+
+export type CalendrierJournee = {
+  numMatch: number;
+  date: string;           // date ISO (lundi de la semaine)
+  rencontres: CalendrierRencontre[];
+};
+
+export type Calendrier = {
+  equipes: CalendrierEquipe[];
+  journees: CalendrierJournee[];
+};

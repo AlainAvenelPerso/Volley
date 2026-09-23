@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AppMessageService } from '../services/app-message.service';
 import { map, tap } from 'rxjs/operators';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-equipes',
@@ -17,7 +18,7 @@ export class Equipes {
   pouleSelectionnee: number = 0;
   equipes$!: Observable<Equipe[]>;
 
-  constructor(private appMessage: AppMessageService, public router: Router, private globalService: GlobalService) { }
+  constructor(private appMessage: AppMessageService, public router: Router, private globalService: GlobalService, private auth: AuthService) { }
 
   ngOnInit(): void {
     this.pouleSelectionnee = this.globalService.getPouleSelected();
@@ -39,7 +40,7 @@ export class Equipes {
 
       //console.log("Equipes de la poule:", this.equipes$);
     }
-    if (this.globalService.getEquipeConnectee().code !== 0) {       // load teams for the club
+    if (this.auth.currentCodeEquipe !== 0) {       // load teams for the club
       this.globalService.loadEquipes();
       this.equipes$ = this.globalService.getEquipes().pipe(
         tap(equipes => {

@@ -1,0 +1,289 @@
+.admin-import {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.champ {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.champ input {
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+.aide {
+  font-size: 13px;
+  color: #e0e0e0;
+}
+
+.titre-manquants {
+  color: #fff;
+}
+
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: 13px;
+  padding: 8px;
+}
+
+.actions {
+  margin: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.actions button {
+  padding: 8px 16px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.message-global {
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.resultats {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.resultats th,
+.resultats td {
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  text-align: left;
+  font-size: 13px;
+  color: #222;
+}
+
+.resultats th {
+  background-color: #1b2a4a;
+  color: #fff;
+}
+
+.resultats tr.ok td {
+  background-color: #e6f7e6;
+  color: #222;
+}
+
+.resultats tr.existante td {
+  background-color: #fff7e0;
+  color: #222;
+}
+
+.resultats tr.erreur td {
+  background-color: #fde0e0;
+  color: #222;
+}
+
+.admin-login {
+  margin-top: 20px;
+}
+
+.admin-login form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-login input {
+  padding: 8px;
+  font-size: 14px;
+  width: 240px;
+}
+
+.admin-login button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.error-message {
+  color: #c00;
+  font-weight: bold;
+}
+
+.roue-saison {
+  padding: 8px 12px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.manquants input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 6px;
+  font-size: 13px;
+}
+
+.manquants input.coord {
+  width: 90px;
+}
+
+.manquants button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.ok-label {
+  color: #2a7a2a;
+  font-weight: bold;
+}
+
+.btn-suite {
+  background-color: #1b6ec2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+}
+
+.onglets {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0 16px;
+  border-bottom: 1px solid #555;
+}
+
+.onglets button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px 6px 0 0;
+  background-color: #2a3a5a;
+  color: #ddd;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.onglets button.actif {
+  background-color: #1b6ec2;
+  color: #fff;
+  font-weight: bold;
+}
+
+.onglets button.rempli {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+.onglets button.incomplet {
+  background-color: #c62828;
+  color: #fff;
+}
+
+.onglets button.incomplet.actif {
+  background-color: #1b6ec2;
+  box-shadow: inset 0 -3px 0 #c62828;
+}
+
+.onglets button.rempli.actif {
+  background-color: #1b6ec2;
+  box-shadow: inset 0 -3px 0 #2e7d32;
+}
+
+.separateur-championnat {
+  margin: 20px 0 12px;
+  border: none;
+  border-top: 1px solid #555;
+}
+
+.bloc-championnat {
+  align-items: center;
+}
+
+.btn-championnat {
+  background-color: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-championnat:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.planning-table td,
+.planning-table th {
+  background-color: #fff;
+  color: #222;
+  text-align: center;
+}
+
+.identifiants-table td,
+.identifiants-table th {
+  background-color: #fff;
+  color: #222;
+}
+
+.identifiants-table code {
+  color: #111;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.planning-table td.dom {
+  background-color: #d7e9ff;
+  color: #0b3d91;
+  font-weight: bold;
+}
+
+.planning-table td.ext {
+  background-color: #ffe0e0;
+  color: #a10000;
+  font-weight: bold;
+}
+
+.dates-table input {
+  padding: 4px 6px;
+  font-size: 13px;
+  width: 120px;
+}
+
+.dates-table td {
+  background-color: #fff;
+  color: #222;
+}
+
+.dates-table .date-field {
+  width: 160px;
+}
+
+/* Compacte le mat-form-field pour réduire la hauteur des lignes */
+.dates-table .date-field ::ng-deep .mat-mdc-form-field-infix {
+  min-height: 36px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.dates-table .date-field ::ng-deep .mat-mdc-text-field-wrapper {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.dates-table td {
+  vertical-align: middle;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}

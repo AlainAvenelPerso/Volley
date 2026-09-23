@@ -1,12 +1,45 @@
 <div class="centre">
   <h2>
     @if ((Lieu == "D")) {
-    <p>{{ nomEquipeConnectee }}{{separator}}{{ nomAdversaire }}</p>
+    <p>
+      <button class="bouton-equipe" (click)="this.router.navigate(['info-equipe'],
+                                                { state: {  codeEquipe: codeEquipeConnectee, codeCategorie: 0 }})">
+        {{ nomEquipeConnectee }}
+      </button>
+      {{separator}}
+      <button class="bouton-equipe" (click)="this.router.navigate(['info-equipe'], 
+                                                { state: {  codeEquipe: codeAdversaire, codeCategorie: 0 }})">
+        {{ nomAdversaire }}
+      </button>
+    </p>
     } @else {
-    <p>{{nomAdversaire}}{{separator}}{{nomEquipeConnectee}}</p>
+    <p>
+      <button class="bouton-equipe" (click)="this.router.navigate(['info-equipe'], 
+                                                { state: {  codeEquipe: codeAdversaire, codeCategorie: 0 }})">
+        {{ nomAdversaire }}
+      </button>
+      {{separator}}
+      <button class="bouton-equipe" (click)="this.router.navigate(['info-equipe'],
+                                                { state: {  codeEquipe: codeEquipeConnectee, codeCategorie: 0 }})">
+        {{ nomEquipeConnectee }}
+      </button>
+
+    </p>
     }
   </h2>
-  <h3>{{ DateMatch | date:'dd/MM/yyyy' }} </h3>
+  <h3 class="ligne-date-report">
+    <span>{{ DateMatch | date:'dd/MM/yyyy' }}</span>
+    @if (canReporterMatch()) {
+      <button mat-button (click)="openDateReportPicker()">Reporter</button>
+      <input
+        #reportDateInput
+        type="date"
+        class="champ-date-report"
+        [value]="nouvelleDateReport"
+        (change)="onDateReportSelected($event.target.value)"
+      />
+    }
+  </h3>
 
   <!-- <input #myInput class="score" /> -->
   @if (ScoreArray[0] != null && (ScoreArray[0] + ScoreArray[1]) > 0) {
@@ -16,15 +49,15 @@
   <!-- Values : {{ sets | json }} <BR> -->
 
   @if (bScoreModifiable == true) {
-    @if (sets != []){
+    @if (sets.length > 0) {
       @for (i of [1,2,3,4,5]; track i) {
         @if (i < iVisibleSlider) { 
           <button class="bouton" (click)="augmenteScore(i, 0)">+</button>
           <input #myInput class="score" 
-            [value]="(sets[i-1]?.[0] ?? 0) > 0 ? sets[i-1]?.[0] : ''" (input)="onScoreChange(i, 0, $event.target.value)" /> 
+            [value]="(i < iVisibleSlider - 1 || forceShowZeroScores) ? (sets[i-1]?.[0] ?? 0) : ((sets[i-1]?.[0] ?? 0) > 0 ? sets[i-1]?.[0] : '')" (input)="onScoreChange(i, 0, $event.target.value)" /> 
            -  
           <input #myInput class="score"
-            [value]="(sets[i-1]?.[1] ?? 0) > 0 ? sets[i-1]?.[1] : ''" (input)="onScoreChange(i, 1, $event.target.value)"/>
+            [value]="(i < iVisibleSlider - 1 || forceShowZeroScores) ? (sets[i-1]?.[1] ?? 0) : ((sets[i-1]?.[1] ?? 0) > 0 ? sets[i-1]?.[1] : '')" (input)="onScoreChange(i, 1, $event.target.value)"/>
         
           <button class="bouton" (click)="augmenteScore(i, 1)">+</button>
 
@@ -33,6 +66,11 @@
             <button class="boutonGomme" (click)="effacerSet()" mat-raised-button color="primary">
               <img src="assets/gomme.png" alt="Effacer" width="20" height="20" />
             </button>
+            @if (bScoreModifiable == true && !bMatchGagne && iVisibleSlider <= 5) {
+              <button class="boutonAjouterSet" (click)="ajouterSet()" [disabled]="!canAddSet()" mat-raised-button color="primary" aria-label="Ajouter un set" title="Ajouter un set">
+                ➕
+              </button>
+            }
           }
         <BR>
         }
@@ -57,7 +95,7 @@
   @if (iVisibleSlider > 1 ) {
     @if (bScoreDejaValideParTous == false) {
       &nbsp;&nbsp;
-      <button (click)="validationScore()" mat-raised-button color="primary" [disabled]="!bValidScore">
+      <button (click)="validationScore()" mat-raised-button color="primary" [disabled]="(ScoreArray[0] + ScoreArray[1] === 0)">
       @if (bScoreModifiable == true) {
         Valider
       } @else {

@@ -1,9 +1,16 @@
-<div class='classement'>
+<div class="tableau-outer">
+  <!-- Utilisé pour centrer sans casser le swipe -->
+  <div class="help-absolute">
+    <mat-icon class="help-icon" (click)="afficheAide()">help_outline</mat-icon>
+  </div>
+ <div class='classement'>
     @let data = Classement$ | async;
 
 @if (data?.length == 0) {
   <div class="loading">Chargement du classement…</div>
 } @else {
+<div class="tableau-inner">
+<div class="tableau-wrapper">
 <table id="classement">
   <thead>
     <tr>
@@ -22,7 +29,7 @@
 
   <tbody>
     @for (classement of Classement$ | async; track classement.nomEquipe; let i = $index) {
-      <tr class="ligne">
+      <tr class="ligne" (click)="ouvrirEquipe(classement.codeEquipe)">
         <!-- <td>{{ i + 1 }}</td> -->
         <td>{{ i + 1 }}-{{ classement.nomEquipe }}</td>
         <td>{{ classement.points }}</td>
@@ -37,7 +44,10 @@
     }
   </tbody>
 </table>
+</div>
+<p class="total-matchs">{{ nbMatchsDistincts }} match(s) joué(s)</p>
+</div>
 }
 
 </div>
-
+</div>

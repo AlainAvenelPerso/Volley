@@ -20,6 +20,10 @@
           "options": {
 			      "outputPath": "dist/volley",
             "browser": "src/main.ts",
+            "allowedCommonJsDependencies": [
+              "leaflet",
+              "crypto-js"
+            ],
             "polyfills": [
               "zone.js"
             ],
@@ -43,7 +47,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1MB",
+                  "maximumWarning": "1.1MB",
                   "maximumError": "2MB"
                 },
                 {

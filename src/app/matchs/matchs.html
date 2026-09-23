@@ -29,6 +29,9 @@
              match.SetsPour < match.SetsContre ? 'P ' + match.SetsPour + '/' + match.SetsContre : '' }}
         </button>
       }
+      @if (!chargementMatchs && (matchs$ | async)?.length === 0) {
+        <p class="message-championnat">Création du championnat en cours...</p>
+      }
     </div>
   </div>
 

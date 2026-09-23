@@ -8,7 +8,8 @@ import { HostListener } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DialogService } from '../services/dialog.service';
-
+import { AppSession, AuthService } from '../services/auth.service';
+import { filter, take } from 'rxjs/operators';
 @Component({
   selector: 'app-matchs',
   standalone: true,
@@ -19,22 +20,37 @@ import { DialogService } from '../services/dialog.service';
 export class Matchs {
   matchs$!: Observable<Match[]>;
   startX = 0;
+  lastX = 0;
   swipeThreshold: number; // sensibilité (px)
   showHelp = false;
+  session$!: Observable<AppSession>;
+  // Vrai tant que les matchs n'ont pas été chargés (équipe connectée sans match => championnat en cours).
+  chargementMatchs = true;
 
-  constructor(public router: Router, private globalService: GlobalService, private dialogService: DialogService) {
+  constructor(
+    public router: Router, 
+    private globalService: GlobalService, 
+    private dialogService: DialogService,
+    private auth: AuthService) {
     this.swipeThreshold = this.globalService.swipeThreshold;    // récupérer la sensibilité depuis le service global
+    this.session$ = this.auth.session$; 
   }
 
   ngOnInit(): void {
-    if (this.globalService.getEquipeConnectee().code !== 0) {       // load teams for the club
-      this.globalService.loadMatchsEquipe();
-      this.matchs$ = this.globalService.getMatchs();
+    // On lie l'observable immédiatement pour éviter d'afficher une liste vide.
+    this.matchs$ = this.globalService.getMatchs();
 
-      console.log("Matchs :", this.matchs$);
-    }
-    else console.log("Aucune équipe connectée !");
-  }
+    this.auth.session$.pipe(
+      filter(session => !!session.code_equipe), // attend qu'une équipe soit connectée
+      take(1)
+    ).subscribe(session => {
+      console.log("Une équipe est connectée :", session.nom_equipe);
+      this.chargementMatchs = true;
+      this.globalService.loadMatchsEquipe().finally(() => {
+        this.chargementMatchs = false;
+      });
+    });
+   }
 
   trackByComposite(Lieu: string, CodeAdversaire: number): string {
     return `${Lieu}-${CodeAdversaire}`;
@@ -54,20 +70,30 @@ export class Matchs {
   @HostListener('window:pointerdown', ['$event'])
   onPointerDown(event: PointerEvent) {
     this.startX = event.clientX;
-    //console.log("Pointer up detected", this.startX);
+    this.lastX = event.clientX;
+  }
+
+  @HostListener('window:pointermove', ['$event'])
+  onPointerMove(event: PointerEvent) {
+    this.lastX = event.clientX;
   }
 
   @HostListener('window:pointerup', ['$event'])
   onPointerUp(event: PointerEvent) {
-    //const deltaX = Math.abs(event.clientX - this.startX);
-    const deltaX = event.clientX - this.startX;
-    //console.log("Pointer up detected", deltaX);
+    this.evaluerSwipe(event.clientX);
+  }
+
+  @HostListener('window:pointercancel', ['$event'])
+  onPointerCancel(event: PointerEvent) {
+    this.evaluerSwipe(this.lastX);
+  }
+
+  private evaluerSwipe(finX: number) {
+    const deltaX = finX - this.startX;
     if (deltaX > this.swipeThreshold) {
-      //console.log('Swipe gauche détecté');
       this.router.navigate(['/classement']);
     }
     if (deltaX < -this.swipeThreshold) {
-      //console.log('Swipe droite détecté');
       this.router.navigate(['/resultats']);
     }
   }

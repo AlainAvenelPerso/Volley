@@ -1,0 +1,270 @@
+<div class="admin-import">
+
+  @if (!estConnecteAdmin) {
+    <div class="admin-login">
+      <p>Connexion administrateur requise.</p>
+      @if (adminErrorMessage) {
+        <p class="error-message">{{ adminErrorMessage }}</p>
+      }
+      <form (ngSubmit)="loginAdmin()">
+        <input #adminPwd type="password" [(ngModel)]="adminPassword" name="adminPassword"
+               placeholder="Mot de passe administrateur" required />
+        <button type="submit">Se connecter</button>
+      </form>
+    </div>
+  } @else {
+
+  <div class="champ">
+    <label for="saison">Saison :</label>
+    <select id="saison" class="roue-saison" [(ngModel)]="anneeDebut" (ngModelChange)="majSaison()">
+      @for (a of anneesDisponibles; track a) {
+        <option [ngValue]="a">{{ a }}-{{ a + 1 }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="onglets">
+    <button type="button" [class.actif]="etape === 'equipes'" [class.rempli]="equipesRenseignees" (click)="retourEquipes()">1 - Équipes</button>
+    <button type="button" [class.actif]="etape === 'dates'" [class.rempli]="datesRenseignees" [class.incomplet]="datesIncompletes" (click)="allerAuxDates()">
+      2 - Dates
+      @if (datesIncompletes) {
+        ({{ nbDatesEnregistrees }}/{{ nbJourneesAttendues }})
+      }
+    </button>
+    <button type="button" [class.actif]="etape === 'planning'" [class.rempli]="championnatRenseigne" (click)="allerAuPlanning()">3 - Planning club</button>
+  </div>
+
+  @if (etape === 'equipes') {
+
+  <p class="aide">
+    Copiez le tableau (depuis Excel/Sheets) avec les colonnes :
+    <b>Poule, Equipe, Prénom capitaine, Nom capitaine, Mail capitaine, Gymnase, Jour match, Horaire match</b>
+    puis collez-le ci-dessous.
+  </p>
+
+  <textarea
+    [(ngModel)]="texteColle"
+    rows="12"
+    placeholder="Collez ici le tableau (colonnes séparées par des tabulations)..."
+  ></textarea>
+
+  <div class="actions">
+    <button (click)="lancerImport()" [disabled]="enCours">
+      {{ enCours ? 'Import en cours...' : 'Lancer l\'import' }}
+    </button>
+  </div>
+
+  @if (messageGlobal) {
+    <p class="message-global">{{ messageGlobal }}</p>
+  }
+
+  @if (resultats.length > 0) {
+    <table class="resultats">
+      <thead>
+        <tr>
+          <th>Équipe</th>
+          <th>Statut</th>
+          <th>Détail</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of resultats; track r.equipe) {
+          <tr [class.ok]="r.statut === 'créée'"
+              [class.existante]="r.statut === 'existante'"
+              [class.erreur]="r.statut === 'erreur'">
+            <td>{{ r.equipe }}</td>
+            <td>{{ r.statut }}</td>
+            <td>{{ r.message }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (gymnasesManquants.length > 0) {
+    <h3 class="titre-manquants">Gymnases manquants ({{ gymnasesManquants.length }})</h3>
+    <p class="aide">
+      Aucun gymnase trouvé pour ces équipes. Saisissez les informations puis
+      cliquez sur <b>Enregistrer</b> pour créer le gymnase et rattacher les équipes.
+    </p>
+    <table class="resultats manquants">
+      <thead>
+        <tr>
+          <th>Nom_Equipe</th>
+          <th>Nom du gymnase</th>
+          <th>Adresse</th>
+          <th>Commune</th>
+          <th>X</th>
+          <th>Y</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (g of gymnasesManquants; track g.nomRecherche; let i = $index) {
+          <tr [class.ok]="g.enregistre" [class.erreur]="!g.enregistre">
+            <td>{{ g.nomRecherche }}</td>
+            <td><input type="text" [(ngModel)]="g.nomGymnase" [disabled]="g.enregistre" /></td>
+            <td><input type="text" [(ngModel)]="g.adresse" [disabled]="g.enregistre" /></td>
+            <td><input type="text" [(ngModel)]="g.commune" [disabled]="g.enregistre" /></td>
+            <td><input type="number" step="any" [(ngModel)]="g.x" [disabled]="g.enregistre" class="coord" /></td>
+            <td><input type="number" step="any" [(ngModel)]="g.y" [disabled]="g.enregistre" class="coord" /></td>
+            <td>
+              @if (g.enregistre) {
+                <span class="ok-label">Enregistré</span>
+              } @else {
+                <button type="button" (click)="enregistrerGymnase(i)">Enregistrer</button>
+              }
+              @if (g.erreur) {
+                <div class="error-message">{{ g.erreur }}</div>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (identifiantsEquipes.length > 0) {
+    <h3 class="titre-manquants">Identifiants des équipes créées</h3>
+    <p class="aide">Conservez ces mots de passe : ils ne seront plus affichés ensuite.</p>
+    <div class="actions">
+      <button type="button" class="btn-suite" (click)="copierIdentifiants()">Copier la liste</button>
+    </div>
+    <table class="resultats identifiants-table">
+      <thead>
+        <tr>
+          <th>Équipe</th>
+          <th>Mot de passe</th>
+          <th>Envoi</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (id of identifiantsEquipes; track id.email) {
+          <tr>
+            <td>{{ id.equipe }}</td>
+            <td><code>{{ id.motDePasse }}</code></td>
+            <td>
+              <button type="button" class="btn-suite"
+                      [disabled]="!id.mailCapitaine"
+                      [title]="id.mailCapitaine || 'Aucune adresse e-mail'"
+                      (click)="envoyerMailCapitaine(id)">✉ Envoyer</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  }
+
+  @if (etape === 'dates') {
+    <h3 class="titre-manquants">Dates des journées — saison {{ saison }}</h3>
+    <p class="aide">Ajustez les dates proposées puis enregistrez.</p>
+
+    @if (nbJourneesAttendues > 0) {
+      <p class="aide">
+        Journées attendues : <strong>{{ nbJourneesAttendues }}</strong>
+        (poule la plus fournie : {{ nbEquipesMax }} équipes) —
+        dates renseignées : <strong>{{ nbDatesRenseignees }}</strong>.
+      </p>
+    }
+
+    <table class="resultats dates-table">
+      <thead>
+        <tr>
+          <th>Journée</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (d of dates; track d.journee; let i = $index) {
+          <tr>
+            <td>{{ d.journee }}</td>
+            <td>
+              <mat-form-field appearance="outline" class="date-field" subscriptSizing="dynamic">
+                <input matInput [matDatepicker]="picker" [(ngModel)]="d.date" placeholder="JJ/MM/AAAA" />
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker [startAt]="dateDebutPour(i)"></mat-datepicker>
+              </mat-form-field>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="actions">
+      <button type="button" class="btn-suite" (click)="enregistrerDates()" [disabled]="datesEnCours">
+        {{ datesEnCours ? 'Enregistrement...' : 'Enregistrer les dates' }}
+      </button>
+    </div>
+
+    @if (datesMessage) {
+      <p class="message-global">{{ datesMessage }}</p>
+    }
+  }
+
+  @if (etape === 'planning') {
+    <h3 class="titre-manquants">Planning d'un club — saison {{ saison }}</h3>
+
+    <div class="champ">
+      <label for="club">Club :</label>
+      <select id="club" class="roue-saison" [(ngModel)]="clubSelectionne" (ngModelChange)="chargerPlanningClub()">
+        <option value="">— Choisir un club —</option>
+        @for (c of clubs; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+    </div>
+
+    @if (planningMessage) {
+      <p class="message-global">{{ planningMessage }}</p>
+    }
+
+    @if (planningEquipes.length > 0) {
+      <table class="resultats planning-table">
+        <thead>
+          <tr>
+            <th>Journée</th>
+            <th>Semaine du</th>
+            @for (e of planningEquipes; track e.code) {
+              <th>{{ e.nom }}</th>
+            }
+            <th>Dom / Ext</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (d of planningDates; track d.journee) {
+            <tr>
+              <td>{{ d.journee }}</td>
+              <td>{{ formatDate(d.date) }}</td>
+              @for (e of planningEquipes; track e.code) {
+                <td [class.dom]="lieuPour(d.date, e.code) === 'D'"
+                    [class.ext]="lieuPour(d.date, e.code) === 'E'">
+                  {{ libelleLieu(lieuPour(d.date, e.code)) }}
+                </td>
+              }
+              <td class="total-domext">{{ comptageDomExtJournee(d.date) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+
+  <hr class="separateur-championnat" />
+  <div class="actions bloc-championnat">
+    <button type="button" class="btn-championnat" (click)="creerChampionnat()" [disabled]="!peutCreerChampionnat">
+      {{ championnatEnCours ? 'Création...' : '⚡ Créer le championnat' }}
+    </button>
+    @if (!datesCompletes) {
+      <span class="aide">
+        Enregistrez exactement {{ nbJourneesAttendues }} date(s) pour pouvoir créer le championnat.
+      </span>
+    }
+  </div>
+
+  @if (championnatMessage) {
+    <p class="message-global">{{ championnatMessage }}</p>
+  }
+  }
+</div>

@@ -1,0 +1,43 @@
+<div class="tableau-outer">
+  <h3 class="titre-planning">Planning du club — {{ club }}</h3>
+
+  @if (chargement) {
+    <p class="message-global">Chargement du planning…</p>
+  }
+
+  @if (message) {
+    <p class="message-global">{{ message }}</p>
+  }
+
+  @if (planningEquipes.length > 0) {
+    <div class="tableau-wrapper">
+      <table class="resultats planning-table">
+        <thead>
+          <tr>
+            <th>Journée</th>
+            <th>Semaine du</th>
+            @for (e of planningEquipes; track e.code) {
+              <th>{{ e.nom }}</th>
+            }
+            <th>Dom / Ext</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (d of planningDates; track d.journee) {
+            <tr>
+              <td>{{ d.journee }}</td>
+              <td>{{ formatDate(d.date) }}</td>
+              @for (e of planningEquipes; track e.code) {
+                <td [class.dom]="lieuPour(d.date, e.code) === 'D'"
+                    [class.ext]="lieuPour(d.date, e.code) === 'E'">
+                  {{ libelleLieu(lieuPour(d.date, e.code)) }}
+                </td>
+              }
+              <td class="total-domext">{{ comptageDomExtJournee(d.date) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

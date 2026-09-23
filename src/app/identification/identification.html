@@ -1,35 +1,42 @@
 <div class="identification-container">
-  @if (isConnected == false) {
+  <!-- @if (isConnected == false) { -->
   <section class="id-card">
     <h3>Connexion</h3>
 
     <p class="muted">Entrez le nom de l'équipe et le mot de passe</p>
-    <form class="login-form" (ngSubmit)="loginWithSupabase()">
+    @if (isLoadingEquipes) {
+      <p class="loading-message">Chargement des équipes en cours...</p>
+    }
+    @if (loginErrorMessage) {
+      <p class="error-message">{{ loginErrorMessage }}</p>
+    }
+    <form class="login-form" (ngSubmit)="loginSupabase()">
     <!-- Dropdown des équipes -->
     <label class="visually-hidden" for="team">Equipe</label>
-    <select id="team" [(ngModel)]="username" name="username" required>
+    <select id="team" [(ngModel)]="code_equipe" (ngModelChange)="clearLoginError()" name="code_equipe" required>
         @for (equipe of equipesAll$ | async; track equipe.nom) {
-      <option [value]="equipe.nom">
-        {{ equipe.nom }}
+      <option [value]="equipe.code">
+        {{ equipe.nom }} ({{ equipe.nomCategorie }})
       </option>
     }
     </select>
       <label class="visually-hidden" for="password">Mot de passe</label>
-      <input id="password" class="pwd-input" type="password" [(ngModel)]="password" placeholder="Mot de passe" name="password" required />
+      <input id="password" class="pwd-input" type="password" [(ngModel)]="password" (ngModelChange)="clearLoginError()" placeholder="Mot de passe" name="password" required />
 
       <div class="actions">
         <button type="submit" class="btn-primary">Se connecter</button>
       </div>
     </form>
+
   </section>
-   }
-    @else {
+   <!-- } -->
+    <!-- @else {
     <section class="id-card welcome">
       <h3>Bienvenue</h3>
-      <p class="muted">Vous êtes connecté en tant que <strong>{{username}}</strong></p>
+      <p class="muted">Vous êtes connecté en tant que <strong>{{code_equipe}}</strong></p>
       <div class="actions">
         <button (click)="disconnect()" class="btn-ghost">Déconnexion</button>
       </div>
     </section>
-    }
+    } -->
 </div>

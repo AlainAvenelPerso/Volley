@@ -1,0 +1,106 @@
+.calendrier-outer {
+  padding: 12px;
+  color: #fff;
+}
+
+.message {
+  color: #fff;
+  font-weight: bold;
+}
+
+.legende {
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.legende .pastille {
+  padding: 2px 6px;
+  margin: 0 2px;
+  border-radius: 3px;
+  color: #222;
+}
+
+.pastille.passee,
+.calendrier-table th.passee,
+.calendrier-table td.passee {
+  background-color: #e8e8e8;
+  color: #222;
+}
+
+.pastille.courante,
+.calendrier-table th.courante,
+.calendrier-table td.courante {
+  background-color: #e6c8f0;
+  color: #222;
+}
+
+.pastille.future,
+.calendrier-table th.future,
+.calendrier-table td.future {
+  background-color: #ffffff;
+  color: #222;
+}
+
+.tableau-wrapper {
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.calendrier-table {
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.calendrier-table th,
+.calendrier-table td {
+  border: 1px solid #bbb;
+  padding: 2px 4px;
+  text-align: center;
+  color: #222;
+  background-color: #fff;
+  min-width: 22px;
+}
+
+.calendrier-table .ligne-mois th,
+.calendrier-table .col-libelle {
+  background-color: #d9e4ea;
+  color: #222;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.calendrier-table .rencontre {
+  white-space: nowrap;
+}
+
+/* Tableau des équipes */
+.equipes-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+
+.equipes-table th,
+.equipes-table td {
+  border: 1px solid #bbb;
+  padding: 6px 8px;
+  color: #222;
+  background-color: #fff;
+  text-align: left;
+  vertical-align: top;
+}
+
+.equipes-table .gym-nom {
+  font-weight: 600;
+}
+
+.equipes-table .gym-adresse {
+  color: #1a56db;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.aide-adresse {
+  text-align: center;
+  font-style: italic;
+}

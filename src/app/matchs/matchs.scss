@@ -5,7 +5,6 @@
   height: 100%;
 }
 
-
 .no-wrap {
   white-space: nowrap;
   display: inline-block;
@@ -13,11 +12,45 @@
   max-width: 100%;
 }
 
+.message-championnat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-style: italic;
+  color: #2563eb;
+}
+
 .matchs-root {
   position: relative;
   height: 100%;
   width: 100%;
   overflow: hidden;
+}
+
+.matchs-root .button-container {
+  align-items: center;
+}
+
+.matchs-root .button-container button {
+  width: 50%;
+}
+
+/* Sur petit écran : boutons pleine largeur, texte qui peut revenir à la ligne */
+@media (max-width: 600px) {
+  .matchs-root .button-container button {
+    width: 100%;
+  }
+
+  .no-wrap {
+    white-space: normal;
+    max-width: 100%;
+    word-break: break-word;
+  }
 }
 
 

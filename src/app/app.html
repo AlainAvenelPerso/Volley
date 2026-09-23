@@ -8,13 +8,27 @@
 
 <nav class="side-menu" aria-hidden="true">
   <ul>
+    @if (teamName$ | async) {
+    <li><a routerLink="/matchs" (click)="closeMenu()">Accueil</a></li>
+    } @else {
     <li><a routerLink="/" (click)="closeMenu()">Accueil</a></li>
-    @if (isConnected$ | async) {
+    }
+    @if (teamName$ | async) {
     <li><a routerLink="/matchs" (click)="closeMenu()">Matchs</a></li>
+    <li><a routerLink="/classement" (click)="closeMenu()">Classement</a></li>
+    <li><a routerLink="/resultats" (click)="closeMenu()">Résultats</a></li>
+    <li class="menu-large-only"><a routerLink="/calendrier" (click)="closeMenu()">Calendrier</a></li>
     <li><a routerLink="/equipes" (click)="closeMenu()">Equipes du club</a></li>
+    @if (clubPlusieursEquipes$ | async) {
+    <li><a routerLink="/planning-club" (click)="closeMenu()">Planning du club</a></li>
+    }
     <li><a routerLink="/connexion" (click)="disconnect(); closeMenu()">Déconnexion</a></li>
     } @else {
     <li><a routerLink="/connexion" (click)="closeMenu()">Connexion</a></li>
+    }
+    <li><a routerLink="/admin-import" (click)="closeMenu()">Admin</a></li>
+    @if (isAdmin$ | async) {
+    <li><a routerLink="/connexion" (click)="disconnect(); closeMenu()">Déconnexion admin</a></li>
     }
   </ul>
 </nav>
@@ -25,9 +39,15 @@
 <div class="app-container">
   <header class="main-header" role="banner">
     <div class="header-left">
+      @if (teamName$ | async) {
+      <a routerLink="/matchs" (click)="closeMenu()" class="logo-link" aria-label="Accueil">
+        <img src="assets/LogoUfolep.gif" alt="UFOLEP logo" class="header-logo" />
+      </a>
+      } @else {
       <a routerLink="/" (click)="closeMenu()" class="logo-link" aria-label="Accueil">
         <img src="assets/LogoUfolep.gif" alt="UFOLEP logo" class="header-logo" />
       </a>
+      }
     </div>
     <div class="header-right">
       <div class="header-text">
@@ -41,7 +61,27 @@
     <router-outlet></router-outlet>
   </main>
 
-  <footer id="app-footer" class="app-footer" [class.visible]="(message$ | async)" aria-live="polite" role="status">
+  <!-- <footer id="app-footer" class="app-footer" [class.visible]="(session$ | async)" aria-live="polite" role="status">
+  <ng-container *ngIf="session$ | async as session"> {{ session?.nom_equipe }} </ng-container>
+  </footer> -->
+
+    <!-- <footer id="app-footer" class="app-footer" [class.visible]="(message$ | async)" aria-live="polite" role="status">
     {{ message$ | async }}
-  </footer>
+  </footer> -->
+  @if (session$ | async; as session) {
+    @if (session.nom_equipe) {
+      <footer
+            class="app-footer"
+            [class.visible]="session.nom_equipe">
+      {{ session.nom_equipe }} @if (session.code_categorie) { ({{ getNomPoule(session.code_categorie) }}) }
+    </footer>
+    }
+  }
+
+  @if (isAdmin$ | async) {
+    <footer class="app-footer app-footer-admin visible">
+      Administrateur connecté
+    </footer>
+  }
+
 </div>

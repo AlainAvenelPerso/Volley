@@ -1,41 +1,102 @@
+.tableau-outer {
+  min-height: calc(100vh - 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.tableau-inner {
+  display: block;
+  max-width: 100%;
+}
+
+/* Celui-ci garde le scroll horizontal */
+.tableau-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.help-absolute {
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  z-index: 50;
+  display: flex;
+  flex-direction: row-reverse;
+}
 
 .classement {
     text-align: center;
-    margin: 20px auto;
-    max-width: 800px;
+    margin: 0 auto;
+    max-width: 100%;
 }
 .ligne {
-    color:#444;
+    color:#e2e8f0;
+    cursor: pointer;
 }
   table#classement {
     border-collapse: collapse;
-    width: 100%;
+    width: max-content;
+    margin: 0;
     font-size: 15px;
   }
 
   table#classement th,
   table#classement td {
-    border: 1px solid #999; /* séparateur visible */
+    border: 1px solid #1e3a8a;
     padding: 8px;
     text-align: center;
+    color: #fff;
+  }
+
+  /* Nom de l'équipe : reste sur une seule ligne et figé (non scrollable) */
+  table#classement th:first-child,
+  table#classement td:first-child {
+    white-space: nowrap;
+    text-align: left;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    box-shadow: inset -1px 0 0 #1e3a8a;
+  }
+
+  table#classement thead th:first-child {
+    background-color: #1e3a8a;
+    z-index: 6;
+  }
+
+  table#classement tbody tr:nth-child(odd) td:first-child {
+    background-color: #1d4ed8;
+  }
+
+  table#classement tbody tr:nth-child(even) td:first-child {
+    background-color: #2563eb;
   }
 
   /* En-tête */
   table#classement thead {
-    background-color: #444;
+    background-color: #1e3a8a;
     color: white;
   }
 
   /* Lignes alternées */
   table#classement tbody tr:nth-child(odd) {
-    background-color: #f0f0f0; /* gris clair */
+    background-color: #1d4ed8;
   }
 
   table#classement tbody tr:nth-child(even) {
-    background-color: #ffffff; /* blanc */
+    background-color: #2563eb;
   }
 
   /* Survol */
   table#classement tbody tr:hover {
-    background-color: #d0e4ff; /* bleu clair */
+    background-color: #3b82f6;
+  }
+
+  .total-matchs {
+    color: #e2e8f0;
+    text-align: center;
+    font-weight: 600;
+    margin-top: 10px;
   }

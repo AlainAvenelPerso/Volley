@@ -1,0 +1,41 @@
+// :host {
+//   display: block;
+//   //padding: 20px;
+//   //background: #eee;
+//   max-height: calc(100vh - 100px); /* ajuste la hauteur pour éviter le dépassement sous le header */
+//   //height: 100%;
+//     position: relative;
+//   height: 100%;
+//   width: 100%;
+//   overflow: hidden;
+
+// }
+
+.poule-root {
+  position: relative;
+  min-height: calc(100vh - 100px);
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.poule-container {
+  display: flex;             /* active flexbox */
+  flex-direction: column;    /* empile les boutons verticalement */
+  justify-content: center;   /* centre verticalement */
+  //justify-content: flex-start; /* important : sinon le scroll ne sert à rien */
+  align-items: center;       /* centre horizontalement */
+  //height: 100%;              /* prend toute la hauteur de la fenêtre */
+  gap: 30px;                 /* espace entre les boutons */
+  padding-left: 40px;
+  padding-right: 40px;
+  max-height: calc(100vh - 100px); /* ajuste la hauteur pour éviter le dépassement sous le header */
+  height: auto;
+  width: 100%;
+}
+
+.poule-container .category-button {
+  width: 50%;
+}

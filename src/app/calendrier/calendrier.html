@@ -1,0 +1,115 @@
+<div class="calendrier-outer">
+  @if (chargement) {
+    <p class="message">Chargement du calendrier…</p>
+  }
+
+  @if (message) {
+    <p class="message">{{ message }}</p>
+  }
+
+  @if (semaines.length > 0) {
+    <div class="legende">
+      Légende des couleurs :
+      <span class="pastille passee">Semaines passées</span>
+      <span class="pastille courante">Semaine courante</span>
+      <span class="pastille future">Semaines futures</span>
+    </div>
+
+    <div class="tableau-wrapper">
+      <table class="calendrier-table">
+        <thead>
+          <!-- Ligne des mois -->
+          <tr class="ligne-mois">
+            <th class="col-libelle">Semaine</th>
+            @for (m of mois; track $index) {
+              <th [attr.colspan]="m.span">{{ m.libelle }}</th>
+            }
+          </tr>
+          <!-- Ligne "du" -->
+          <tr class="ligne-du">
+            <th class="col-libelle">du</th>
+            @for (s of semaines; track $index) {
+              <th [class.passee]="s.etat === 'passee'"
+                  [class.courante]="s.etat === 'courante'"
+                  [class.future]="s.etat === 'future'">
+                {{ jourLundi(s) }}
+              </th>
+            }
+          </tr>
+          <!-- Ligne "au" -->
+          <tr class="ligne-au">
+            <th class="col-libelle">au</th>
+            @for (s of semaines; track $index) {
+              <th [class.passee]="s.etat === 'passee'"
+                  [class.courante]="s.etat === 'courante'"
+                  [class.future]="s.etat === 'future'">
+                {{ jourDimanche(s) }}
+              </th>
+            }
+          </tr>
+          <!-- Ligne numéro de journée -->
+          <tr class="ligne-journee">
+            <th class="col-libelle">No du match</th>
+            @for (s of semaines; track $index) {
+              <th [class.passee]="s.etat === 'passee'"
+                  [class.courante]="s.etat === 'courante'"
+                  [class.future]="s.etat === 'future'">
+                {{ s.journee?.numMatch }}
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-libelle"></td>
+            @for (s of semaines; track $index) {
+              <td [class.passee]="s.etat === 'passee'"
+                  [class.courante]="s.etat === 'courante'"
+                  [class.future]="s.etat === 'future'">
+                @for (r of libelleRencontres(s); track $index) {
+                  <div class="rencontre">{{ r.dom }}/{{ r.ext }}</div>
+                }
+              </td>
+            }
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tableau des équipes / gymnases -->
+    <div class="tableau-wrapper equipes-wrapper">
+      <table class="equipes-table">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Équipes</th>
+            <th>Nom du gymnase<br>Adresse</th>
+            <th>Commune</th>
+            <th>Jour<br>Horaires</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of equipes; track e.code) {
+            <tr>
+              <td>{{ e.rang }}</td>
+              <td>{{ e.nom }}</td>
+              <td>
+                <div class="gym-nom">{{ e.gymnase?.Nom_Gymnase }}</div>
+                @if (e.gymnase?.Adresse) {
+                  <a class="gym-adresse" (click)="ouvrirMaps(e)">{{ e.gymnase?.Adresse }}</a>
+                }
+              </td>
+              <td>{{ e.commune }}</td>
+              <td>
+                <div>{{ e.jourMatch }}</div>
+                <div>{{ e.heuresMatch }}</div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="aide-adresse">Cliquer sur une adresse pour la situer dans Google Maps</p>
+  }
+</div>
