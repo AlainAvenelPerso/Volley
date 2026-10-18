@@ -1213,16 +1213,18 @@ async loadNomEquipe(id: string) {
   /**
    * Récupère le Code_Joueur d'un capitaine via son email (Mail), ou le crée si absent.
    */
-  async getOrCreateCapitaine(mail: string, prenom: string, nom: string): Promise<number | null> {
+  async getOrCreateCapitaine(mail: string, prenom: string, nom: string, tel: string = ''): Promise<number | null> {
     // L'email n'est pas sensible à la casse : on normalise en minuscules.
     const mailNettoye = (mail ?? '').trim().toLowerCase();
     if (!mailNettoye) {
       return null; // Pas d'email => pas de capitaine identifiable
     }
 
+    const telNettoye = (tel ?? '').trim() || null;
+
     const { data: existant, error: errSelect } = await this.supabase
       .from('Joueurs')
-      .select('Code_Joueur, Nom, Prenom')
+      .select('Code_Joueur, Nom, Prenom, TelPortable')
       .ilike('Mail', mailNettoye)
       .limit(1);
 
@@ -1237,11 +1239,11 @@ async loadNomEquipe(id: string) {
       const nomNettoye = (nom ?? '').trim() || null;
       const prenomNettoye = (prenom ?? '').trim() || null;
 
-      // Le mail est la clef : si Nom ou Prénom ont changé, on corrige la fiche.
-      if (joueur.Nom !== nomNettoye || joueur.Prenom !== prenomNettoye) {
+      // Le mail est la clef : si Nom, Prénom ou Téléphone ont changé, on corrige la fiche.
+      if (joueur.Nom !== nomNettoye || joueur.Prenom !== prenomNettoye || joueur.TelPortable !== telNettoye) {
         const { error: errUpdate } = await this.supabase
           .from('Joueurs')
-          .update({ Nom: nomNettoye, Prenom: prenomNettoye })
+          .update({ Nom: nomNettoye, Prenom: prenomNettoye, TelPortable: telNettoye })
           .eq('Code_Joueur', code);
 
         if (errUpdate) {
@@ -1260,6 +1262,7 @@ async loadNomEquipe(id: string) {
         Nom: (nom ?? '').trim() || null,
         Prenom: (prenom ?? '').trim() || null,
         Mail: mailNettoye,
+        TelPortable: telNettoye,
       });
 
     if (errInsert) {
@@ -1360,6 +1363,26 @@ async loadNomEquipe(id: string) {
     }
 
     return chars.join('');
+  }
+
+  /**
+   * Réinitialise le mot de passe d'une équipe : génère un nouveau mot de passe,
+   * enregistre son hash en base (colonne Mot2Passe) et retourne le mot de passe en clair.
+   */
+  async reinitialiserMotDePasse(codeEquipe: number): Promise<string> {
+    const motDePasse = this.genererMotDePasse();
+    const motDePasseHash = crypto.SHA256(motDePasse).toString();
+
+    const { error } = await this.supabase
+      .from('Equipes')
+      .update({ Mot2Passe: motDePasseHash })
+      .eq('Code_Equipe', codeEquipe);
+
+    if (error) {
+      throw new Error(`Réinitialisation du mot de passe échouée : ${error.message}`);
+    }
+
+    return motDePasse;
   }
 
   /**
@@ -1594,7 +1617,45 @@ async loadNomEquipe(id: string) {
     return count ?? 0;
   }
 
-  /** Retourne le nombre de matchs créés pour une saison. */
+  /**
+   * Liste les équipes d'une saison avec le mail de leur capitaine,
+   * pour l'affichage/envoi des mails dans l'administration.
+   */
+  async listerCapitainesSaison(
+    saison: string
+  ): Promise<{ equipe: string; email: string; motDePasse: string; mailCapitaine: string }[]> {
+    const codesCategories = await this.codesCategoriesSaison(saison);
+    if (codesCategories.length === 0) {
+      return [];
+    }
+
+    const { data, error } = await this.supabase
+      .from('Equipes')
+      .select(`
+        Code_Equipe,
+        Nom_Equipe,
+        Joueurs (
+          Mail
+        )
+      `)
+      .in('Code_Categorie', codesCategories)
+      .order('Nom_Equipe', { ascending: true });
+
+    if (error) {
+      throw new Error(`Lecture Equipes échouée : ${error.message}`);
+    }
+
+    return (data ?? []).map((row: any) => {
+      const capitaine = Array.isArray(row.Joueurs) ? row.Joueurs[0] : row.Joueurs;
+      return {
+        equipe: row.Nom_Equipe,
+        email: `${row.Code_Equipe}@myapp.local`,
+        motDePasse: '',
+        mailCapitaine: capitaine?.Mail ?? '',
+      };
+    });
+  }
+
   async nbMatchsSaison(saison: string): Promise<number> {
     const codesCategories = await this.codesCategoriesSaison(saison);
     if (codesCategories.length === 0) {
@@ -1625,6 +1686,80 @@ async loadNomEquipe(id: string) {
     }
     return count ?? 0;
   }
+
+  /**
+   * Permute les NumMatch du match aller et du match retour d'une équipe pour une journée donnée.
+   * - On trouve le match de `codeEquipe` à la journée `numJournee` pour identifier l'adversaire.
+   * - On localise les deux rencontres entre ces équipes (A reçoit B, B reçoit A).
+   * - On échange leurs NumMatch (donc aussi pour l'adversaire).
+   * @returns un libellé décrivant la permutation réalisée.
+   */
+  async permuterMatchsAllerRetour(codeEquipe: number, numJournee: number): Promise<string> {
+    // 1) Match de l'équipe à cette journée (domicile ou extérieur)
+    const { data: matchJournee, error: errJ } = await this.supabase
+      .from('Matchs')
+      .select('NumMatch, Equipe_Domicile, Equipe_Exterieure')
+      .eq('NumMatch', numJournee)
+      .or(`Equipe_Domicile.eq.${codeEquipe},Equipe_Exterieure.eq.${codeEquipe}`)
+      .limit(1);
+
+    if (errJ) {
+      throw new Error(`Lecture Matchs échouée : ${errJ.message}`);
+    }
+    if (!matchJournee || matchJournee.length === 0) {
+      throw new Error(`Aucun match trouvé pour l'équipe ${codeEquipe} à la journée ${numJournee}.`);
+    }
+
+    const m1 = matchJournee[0] as any;
+    const adversaire = Number(m1.Equipe_Domicile) === codeEquipe
+      ? Number(m1.Equipe_Exterieure)
+      : Number(m1.Equipe_Domicile);
+
+    // 2) Les deux rencontres entre les deux équipes (aller + retour)
+    const { data: rencontres, error: errR } = await this.supabase
+      .from('Matchs')
+      .select('NumMatch, Equipe_Domicile, Equipe_Exterieure')
+      .or(
+        `and(Equipe_Domicile.eq.${codeEquipe},Equipe_Exterieure.eq.${adversaire}),` +
+        `and(Equipe_Domicile.eq.${adversaire},Equipe_Exterieure.eq.${codeEquipe})`
+      );
+
+    if (errR) {
+      throw new Error(`Lecture des rencontres échouée : ${errR.message}`);
+    }
+    if (!rencontres || rencontres.length !== 2) {
+      throw new Error(
+        `Aller/retour introuvable entre ${codeEquipe} et ${adversaire} (trouvé ${rencontres?.length ?? 0} rencontre(s)).`
+      );
+    }
+
+    const rencontreA = rencontres[0] as any;
+    const rencontreB = rencontres[1] as any;
+    const numA = Number(rencontreA.NumMatch);
+    const numB = Number(rencontreB.NumMatch);
+
+    if (numA === numB) {
+      throw new Error(`Les deux rencontres entre ${codeEquipe} et ${adversaire} ont le même NumMatch (${numA}).`);
+    }
+
+    // 3) Échange des NumMatch (identification par la paire d'équipes de chaque rencontre)
+    const permuter = async (dom: number, ext: number, nouveauNum: number) => {
+      const { error } = await this.supabase
+        .from('Matchs')
+        .update({ NumMatch: nouveauNum })
+        .eq('Equipe_Domicile', dom)
+        .eq('Equipe_Exterieure', ext);
+      if (error) {
+        throw new Error(`Mise à jour NumMatch échouée : ${error.message}`);
+      }
+    };
+
+    await permuter(Number(rencontreA.Equipe_Domicile), Number(rencontreA.Equipe_Exterieure), numB);
+    await permuter(Number(rencontreB.Equipe_Domicile), Number(rencontreB.Equipe_Exterieure), numA);
+
+    return `Équipe ${codeEquipe} / adversaire ${adversaire} : journées ${numA} ↔ ${numB} permutées.`;
+  }
+
 
   /**
    * Retourne la liste des clubs (préfixe du Nom_Equipe avant le "-") pour une saison,

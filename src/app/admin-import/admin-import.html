@@ -32,6 +32,7 @@
       }
     </button>
     <button type="button" [class.actif]="etape === 'planning'" [class.rempli]="championnatRenseigne" (click)="allerAuPlanning()">3 - Planning club</button>
+    <button type="button" [class.actif]="etape === 'permutation'" (click)="allerAuxPermutations()">4 - Permutations</button>
   </div>
 
   @if (etape === 'equipes') {
@@ -142,7 +143,7 @@
         @for (id of identifiantsEquipes; track id.email) {
           <tr>
             <td>{{ id.equipe }}</td>
-            <td><code>{{ id.motDePasse }}</code></td>
+            <td>@if (id.motDePasse) { <code>{{ id.motDePasse }}</code> } @else { <span class="aide">—</span> }</td>
             <td>
               <button type="button" class="btn-suite"
                       [disabled]="!id.mailCapitaine"
@@ -266,5 +267,29 @@
   @if (championnatMessage) {
     <p class="message-global">{{ championnatMessage }}</p>
   }
+  }
+
+  @if (etape === 'permutation') {
+  <div class="bloc-permutation">
+    <p class="aide">
+      Saisissez deux colonnes séparées par une tabulation, un point-virgule ou une virgule :
+      <strong>Code_Equipe</strong> et <strong>Numéro de la journée</strong>. Chaque ligne permute
+      le match aller et le match retour de l'équipe concernée (et donc de son adversaire).
+    </p>
+    <textarea
+      [(ngModel)]="textePermutations"
+      rows="8"
+      placeholder="Ex :&#10;12	3&#10;45	7"></textarea>
+
+    <div class="actions">
+      <button type="button" (click)="lancerPermutations()" [disabled]="permutationEnCours">
+        {{ permutationEnCours ? 'Permutation...' : '🔁 Lancer les permutations' }}
+      </button>
+    </div>
+
+    @if (permutationMessage) {
+      <pre class="message-global">{{ permutationMessage }}</pre>
+    }
+  </div>
   }
 </div>

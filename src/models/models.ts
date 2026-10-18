@@ -124,6 +124,7 @@ export type LigneImportEquipe = {
   equipe: string;
   prenomCapitaine: string;
   nomCapitaine: string;
+  telCapitaine: string;
   mailCapitaine: string;
   numeroGymnase: number;
   jourMatch: string;

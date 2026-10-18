@@ -62,8 +62,8 @@ export class AdminImport implements AfterViewChecked {
   resultats: ResultatImport[] = [];
   messageGlobal: string = '';
 
-  // Étape courante : 'equipes', 'dates' ou 'planning'
-  etape: 'equipes' | 'dates' | 'planning' = 'equipes';
+  // Étape courante : 'equipes', 'dates', 'planning' ou 'permutation'
+  etape: 'equipes' | 'dates' | 'planning' | 'permutation' = 'equipes';
 
   // Dates des journées de la saison
   dates: { journee: number; date: Date | null }[] = [];
@@ -97,6 +97,11 @@ export class AdminImport implements AfterViewChecked {
   planningParDate: Map<string, Map<number, string>> = new Map();
   planningMessage: string = '';
   planningEnCours: boolean = false;
+
+  // Permutation des matchs aller/retour (2 colonnes : Code_Equipe, Numéro de journée)
+  textePermutations: string = '';
+  permutationMessage: string = '';
+  permutationEnCours: boolean = false;
 
   // Équipes dont le gymnase n'a pas été trouvé (à compléter manuellement)
   gymnasesManquants: {
@@ -296,7 +301,7 @@ export class AdminImport implements AfterViewChecked {
         continue;
       }
 
-      if (cols.length < 8) {
+      if (cols.length < 9) {
         continue; // ligne incomplète
       }
 
@@ -305,10 +310,11 @@ export class AdminImport implements AfterViewChecked {
         equipe: (cols[1] ?? '').trim(),
         prenomCapitaine: (cols[2] ?? '').trim(),
         nomCapitaine: (cols[3] ?? '').trim(),
-        mailCapitaine: (cols[4] ?? '').trim(),
-        numeroGymnase: 0,
-        jourMatch: (cols[6] ?? '').trim(),
-        horaireMatch: (cols[7] ?? '').trim(),
+        telCapitaine: (cols[4] ?? '').trim(),
+        mailCapitaine: (cols[5] ?? '').trim(),
+        numeroGymnase: Number((cols[6] ?? '').trim()) || 0,
+        jourMatch: (cols[7] ?? '').trim(),
+        horaireMatch: (cols[8] ?? '').trim(),
       });
     }
 
@@ -363,7 +369,8 @@ export class AdminImport implements AfterViewChecked {
         const codeCapitaine = await this.supabase.getOrCreateCapitaine(
           ligne.mailCapitaine,
           ligne.prenomCapitaine,
-          ligne.nomCapitaine
+          ligne.nomCapitaine,
+          ligne.telCapitaine
         );
 
         // 3) Gymnase : recherche par le nom de base de l'équipe (ex: "Cusset -1" => "Cusset")
@@ -405,15 +412,15 @@ export class AdminImport implements AfterViewChecked {
             : `Déjà existante (code ${resultat.codeEquipe})`,
         });
 
-        // Conserve l'identifiant du compte créé (email + mot de passe)
-        if (resultat.statut === 'créée' && resultat.motDePasse) {
-          this.identifiantsEquipes.push({
-            equipe: ligne.equipe,
-            email: `${resultat.codeEquipe}@myapp.local`,
-            motDePasse: resultat.motDePasse,
-            mailCapitaine: ligne.mailCapitaine,
-          });
-        }
+        // Conserve l'identifiant pour l'onglet Mails :
+        // - mot de passe affiché uniquement pour les comptes nouvellement créés,
+        // - mail du capitaine conservé même pour les équipes déjà existantes.
+        this.identifiantsEquipes.push({
+          equipe: ligne.equipe,
+          email: `${resultat.codeEquipe}@myapp.local`,
+          motDePasse: resultat.statut === 'créée' ? (resultat.motDePasse ?? '') : '',
+          mailCapitaine: ligne.mailCapitaine,
+        });
       } catch (error: any) {
         this.resultats.push({
           equipe: ligne.equipe,
@@ -464,15 +471,14 @@ export class AdminImport implements AfterViewChecked {
       this.messageGlobal += ` Aucune adresse e-mail pour ${id.equipe}.`;
       return;
     }
-    const urlConnexion = 'https://ufolep-volley-rhone.github.io/Volley/';
+    const urlConnexion = 'https://alainavenelperso.github.io/Volley/';
     const cc = 'volleyufolep69@free.fr';
     const objet = `Mot de passe de votre équipe "${id.equipe}" – Volley UFOLEP Rhône – saison ${this.saison}`;
     const corps =
       `Bonjour,\n\n` +
       `Voici le mot de passe de votre équipe "${id.equipe}" pour la saison ${this.saison} : ${id.motDePasse}\n\n` +
       `Connexion : ${urlConnexion}\n\n` +
-      `Sportivement,\n` +
-      `Le comité Volley UFOLEP Rhône`;
+      `Sportivement.`;
     const lien = `mailto:${encodeURIComponent(id.mailCapitaine)}` +
       `?cc=${encodeURIComponent(cc)}` +
       `&subject=${encodeURIComponent(objet)}` +
@@ -724,6 +730,56 @@ export class AdminImport implements AfterViewChecked {
     } catch (err: any) {
       this.planningMessage = `Erreur de chargement : ${err?.message ?? err}`;
     }
+  }
+
+  /** Passe à l'étape permutation. */
+  allerAuxPermutations(): void {
+    this.etape = 'permutation';
+    this.permutationMessage = '';
+  }
+
+  /**
+   * Parse le textarea (2 colonnes : Code_Equipe, Numéro de journée) et permute
+   * chaque rencontre aller/retour correspondante. Rapporte le résultat ligne par ligne.
+   */
+  async lancerPermutations(): Promise<void> {
+    this.permutationMessage = '';
+    const texte = (this.textePermutations ?? '').trim();
+    if (!texte) {
+      this.permutationMessage = 'Veuillez saisir au moins une ligne (Code_Equipe, Numéro de journée).';
+      return;
+    }
+
+    const lignes = texte
+      .split(/\r?\n/)
+      .map(l => l.trim())
+      .filter(l => l.length > 0);
+
+    this.permutationEnCours = true;
+    const resultats: string[] = [];
+    try {
+      for (const ligne of lignes) {
+        const cols = ligne.split(/[\t;,]+/).map(c => c.trim());
+        const codeEquipe = Number(cols[0]);
+        const numJournee = Number(cols[1]);
+
+        if (!Number.isFinite(codeEquipe) || !Number.isFinite(numJournee)) {
+          resultats.push(`❌ « ${ligne} » : format invalide (attendu : Code_Equipe, Numéro de journée).`);
+          continue;
+        }
+
+        try {
+          const msg = await this.supabase.permuterMatchsAllerRetour(codeEquipe, numJournee);
+          resultats.push(`✅ ${msg}`);
+        } catch (err: any) {
+          resultats.push(`❌ Équipe ${codeEquipe}, journée ${numJournee} : ${err?.message ?? err}`);
+        }
+      }
+    } finally {
+      this.permutationEnCours = false;
+    }
+
+    this.permutationMessage = resultats.join('\n');
   }
 
   /** Charge le planning (domicile/extérieur) des équipes du club sélectionné. */
