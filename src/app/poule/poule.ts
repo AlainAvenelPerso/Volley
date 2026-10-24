@@ -19,7 +19,7 @@ export class Poule {
   constructor(public router: Router, private globalService: GlobalService) { }
 
   ngOnInit(): void {
-    this.globalService.loadCategories("2025-2026");
+    this.globalService.loadCategoriesSaisonCourante();
     this.categories$ = this.globalService.getCategories();
     console.log("Catégories dans Poule:", this.categories$);
   }

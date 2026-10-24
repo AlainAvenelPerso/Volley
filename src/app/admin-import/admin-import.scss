@@ -104,6 +104,45 @@ textarea {
   width: 240px;
 }
 
+.admin-login .pwd-field {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.admin-login .pwd-field input {
+  padding-right: 40px;
+}
+
+.admin-login .pwd-field input::-ms-reveal,
+.admin-login .pwd-field input::-ms-clear {
+  display: none;
+}
+
+.admin-login .pwd-toggle {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+}
+
+.admin-login .pwd-toggle mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+}
+
 .admin-login button {
   padding: 8px 16px;
   cursor: pointer;

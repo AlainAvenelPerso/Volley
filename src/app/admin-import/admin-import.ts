@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, MAT_DATE_FORMATS, DateAdapter, NativeDateAdapter } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
 import { SupabaseService } from '../services/supabase.service';
 import { GlobalService } from '../services/global';
 import { AuthService } from '../services/auth.service';
@@ -42,6 +43,7 @@ export const FR_DATE_FORMATS = {
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatIconModule,
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
@@ -119,6 +121,7 @@ export class AdminImport implements AfterViewChecked {
   // Connexion admin intégrée
   adminPassword: string = '';
   adminErrorMessage: string = '';
+  showAdminPassword: boolean = false;
 
   constructor(
     private supabase: SupabaseService,
@@ -222,6 +225,10 @@ export class AdminImport implements AfterViewChecked {
 
   get estConnecteAdmin(): boolean {
     return this.auth.isAdmin;
+  }
+
+  toggleShowAdminPassword(): void {
+    this.showAdminPassword = !this.showAdminPassword;
   }
 
   async loginAdmin(): Promise<void> {

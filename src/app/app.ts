@@ -13,6 +13,7 @@ import { AppSession } from './services/auth.service';
 import { map, distinctUntilChanged } from 'rxjs/operators';
 import { filter, take } from 'rxjs/operators';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { version as appVersion } from '../../package.json';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, FormsModule, CommonModule, MatDialogModule ],
@@ -23,6 +24,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 
 export class App {
   protected readonly title = signal('volley');
+  readonly appVersion = appVersion;
   username = '';
   password = '';
   message$!: import('rxjs').Observable<string | null>;

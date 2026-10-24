@@ -1,14 +1,14 @@
 <!-- GitHub Copilot instructions for working with the Volley repo -->
 # Repo-specific guidance for AI coding agents
 
-This file gives focused, actionable guidance to AI coding agents working on the Volley Angular/Firebase project. Keep suggestions specific to files and patterns actually present in this repo.
+This file gives focused, actionable guidance to AI coding agents working on the Volley Angular/Supabase project. Keep suggestions specific to files and patterns actually present in this repo.
 
 **Project Overview:**
 - **Type:** Angular 20 application (root project `volley`). See `angular.json` and `package.json`.
 - **Frontend entry:** `src/main.ts`, app code lives in `src/app` (see `app.ts`, `app.routes.ts`, `app.config.ts`).
-- **Auth/identification area:** `src/app/identification/*` contains the identification UI and styles.
-- **Data integration:** `dataconnect/` contains connector source (`.yaml`, `.gql`) and `src/dataconnect-generated/` contains generated artifacts (CJS/ESM). Treat `dataconnect-generated` as generated code—avoid manual edits.
-- **Backend/data:** Firebase is used via `@angular/fire` and `firebase` packages; repo includes `firebase.json`, `firestore.rules`, and `firestore-data/` exports.
+- **Auth/identification area:** `src/app/identification/*` contains the team login UI and styles; admin login lives in `src/app/admin-import/*`.
+- **Backend/data:** Supabase is the only backend. The Supabase client is configured from `src/environments/environment.ts` (exports `supabase` with `supabaseUrl`/`supabaseKey`). Data access goes through `src/app/services/supabase.service.ts`. SQL/schema assets live in the `sql/` and `supabase/` folders.
+- **State:** `src/app/services/global.ts` (`GlobalService`, providedIn root) owns season/category/team state via BehaviorSubjects. `auth.service.ts` owns team sessions persisted in `localStorage` (key `sessionEquipe`).
 
 **Build / Run / Test (commands)**
 - Install: `npm install`
@@ -22,30 +22,30 @@ If you need to run Angular CLI directly, use `npx ng <command>` or `npm run ng -
 **Key conventions and patterns**
 - Styles: Project-wide SCSS; default component style is `scss` (see `angular.json`). Global styles in `src/styles.scss`; components have `.scss` alongside `.ts` and `.html` (example: `src/app/identification/identification.scss`).
 - Routing & config: Centralized in `src/app/app.routes.ts` and `src/app/app.config.ts` — change these for app-level navigation and feature flags.
-- Generated code: `src/dataconnect-generated/` and `src/dataconnect-generated/angular/` are outputs from the dataconnect generator. To update GraphQL schema/queries, edit `dataconnect/schema/*.gql`, `dataconnect/seed_data.gql` or files in `dataconnect/example/` and re-run the generator (no generator script is present here — ask the repo owner for the exact generator command before attempting).
-- Firebase config: Runtime Firebase settings are stored in `src/environments/environment.ts` (not committed with secrets). Use Firebase JSON files (`firebase.json`, `firestore.rules`) for deployments and rules updates.
+- Season handling: The current season is read from the Supabase `Params` table using the key `SaisonCourante` (see `GlobalService.setSaison()`/`ensureSaison()`). Do NOT hard-code season values like `2025-2026`.
+- Data access: Query Supabase through `supabase.service.ts` (tables such as `Params`, `Categories`, `Equipes`, `Matchs`). Prefer exact category filters (`.in(...)`) over broad queries.
+- Version display: The app version is imported from `package.json` (requires `resolveJsonModule`) and shown bottom-right in the footer (`app.ts` / `app.html` / `app.scss`).
 
 **Where to make changes vs what to avoid**
 - Edit application logic in `src/app/*` and component folders. Unit tests live alongside components (`*.spec.ts`).
-- Edit `dataconnect/*` source files for GraphQL or connector changes. Do NOT hand-edit `src/dataconnect-generated/*`—it's generated.
 - Do not change `angular.json` unless adjusting build/serve settings; prefer changing per-environment config files.
+- Keep Supabase credentials in `src/environments/environment.ts`. Note the `anon` key is public by design — real protection must come from Supabase Row Level Security (RLS) policies.
 
 **Integration and data flow notes**
-- GraphQL / dataconnect: `dataconnect/*.yaml` and `*.gql` files define connectors and schema; generated JS lives in `src/dataconnect-generated`. Changes propagate to the app via imports from `dataconnect-generated`.
-- Firebase: `@angular/fire` is used to integrate with Firestore/auth — look for imports from `@angular/fire` in `src/app` to find integration points.
+- Supabase: `environment.ts` provides URL/key; `supabase.service.ts` creates the client and exposes data/auth helpers; `GlobalService` consumes them and feeds components (`poule.ts`, `equipes.ts`, `matchs.ts`, `identification.ts`).
 
 **Tests and CI**
 - Unit tests use Karma (`npm test`). No CI config files (GitHub Actions) are present by default — when authoring CI workflows, use `npm test` and `npm run build` steps.
 
 **Helpful file references (examples)**
 - App entry and routing: `src/app/app.ts`, `src/app/app.routes.ts`, `src/app/app.config.ts`.
-- Auth component: `src/app/identification/identification.ts` and `identification.scss`.
-- Generated API: `src/dataconnect-generated/index.cjs.js` and `src/dataconnect-generated/esm/index.esm.js`.
-- GraphQL source/schema: `dataconnect/schema/schema.gql`, `dataconnect/seed_data.gql`, `dataconnect/example/*.gql`.
+- Team auth component: `src/app/identification/identification.ts` and `identification.scss`.
+- Admin area: `src/app/admin-import/admin-import.ts` / `.html` / `.scss`.
+- Data access & state: `src/app/services/supabase.service.ts`, `src/app/services/global.ts`, `src/app/services/auth.service.ts`.
 
 **When uncertain — exact checks to run before edits**
-- If touching data models, confirm where the model is used: search for imports from `dataconnect-generated`.
+- If touching data models, confirm usage by searching imports from `src/models/models` and calls into `supabase.service.ts`.
 - Before committing build-related changes, run `npm run build` locally to avoid breaking CI.
-- If you need to update generated code, ask repo owner for the generator command or workflow; do not directly modify `src/dataconnect-generated`.
+- When changing season/category loading, verify the `SaisonCourante` Params key is used and no hard-coded season remains.
 
-If anything here is unclear or you want me to include examples of common code edits (for example: adding a route, updating a GraphQL query, or wiring Firebase auth), tell me which area and I'll extend or adapt these instructions.
+If anything here is unclear or you want me to include examples of common code edits (for example: adding a route, updating a Supabase query, or wiring team/admin auth), tell me which area and I'll extend or adapt these instructions.

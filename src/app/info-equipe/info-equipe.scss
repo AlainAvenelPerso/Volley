@@ -23,8 +23,8 @@
 }
 
 .button-container.SurchargeDiv {
-  height: calc(100vh - 100px);
-  max-height: calc(100vh - 100px);
+  height: calc(100vh - 140px);
+  max-height: calc(100vh - 140px);
   width: 100%;
   box-sizing: border-box;
   padding-left: 40px;
@@ -39,4 +39,5 @@
 .map-actions {
   display: flex;
   justify-content: center;
+  padding-bottom: 10px;
 }

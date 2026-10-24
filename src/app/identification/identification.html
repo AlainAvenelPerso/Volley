@@ -10,18 +10,23 @@
     @if (loginErrorMessage) {
       <p class="error-message">{{ loginErrorMessage }}</p>
     }
-    <form class="login-form" (ngSubmit)="loginSupabase()">
+    <form class="login-form" (ngSubmit)="loginSupabase()" autocomplete="off">
     <!-- Dropdown des équipes -->
     <label class="visually-hidden" for="team">Equipe</label>
-    <select id="team" [(ngModel)]="code_equipe" (ngModelChange)="clearLoginError()" name="code_equipe" required>
-        @for (equipe of equipesAll$ | async; track equipe.nom) {
+    <select id="team" [(ngModel)]="code_equipe" (ngModelChange)="clearLoginError()" name="code_equipe" required autocomplete="off">
+        @for (equipe of equipesAll$ | async; track equipe.code) {
       <option [value]="equipe.code">
         {{ equipe.nom }} ({{ equipe.nomCategorie }})
       </option>
     }
     </select>
       <label class="visually-hidden" for="password">Mot de passe</label>
-      <input id="password" class="pwd-input" type="password" [(ngModel)]="password" (ngModelChange)="clearLoginError()" placeholder="Mot de passe" name="password" required />
+      <div class="pwd-field">
+        <input id="password" class="pwd-input" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" (ngModelChange)="clearLoginError()" placeholder="Mot de passe" name="password" required autocomplete="new-password" />
+        <button type="button" class="pwd-toggle" (click)="toggleShowPassword()" [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" [attr.aria-pressed]="showPassword">
+          <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </div>
 
       <div class="actions">
         <button type="submit" class="btn-primary">Se connecter</button>

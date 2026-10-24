@@ -120,11 +120,37 @@ export class GlobalService {
   getSaison(): string { return this.SaisonCourante; }
 
   loadAllEquipes(): void {
-    this.supabase.loadEquipes(this.Categories).then((data: Equipe[]) => {
-      this.Equipes = data;
-      console.log("GlobalService: toutes les équipes chargées par loadAllEquipes", this.Equipes);
-      this.equipesAllSubject.next(data);
-      console.log('Equipes chargées dans GlobalService :', data);
+    this.ensureCategories().then(() => {
+      this.supabase.loadEquipes(this.Categories).then((data: Equipe[]) => {
+        this.Equipes = data;
+        console.log("GlobalService: toutes les équipes chargées par loadAllEquipes", this.Equipes);
+        this.equipesAllSubject.next(data);
+        console.log('Equipes chargées dans GlobalService :', data);
+      });
+    });
+  }
+
+  // Garantit que this.Categories est renseigné avant tout chargement d'équipes.
+  private ensureCategories(): Promise<void> {
+    if (this.Categories && this.Categories.length > 0) {
+      return Promise.resolve();
+    }
+    return this.ensureSaison().then(() =>
+      this.supabase.loadCategories(this.SaisonCourante).then((data: Categorie[]) => {
+        this.Categories = data;
+        this.categoriesSubject.next(data);
+      })
+    );
+  }
+
+  // Garantit que la saison courante est chargée depuis le paramètre 'SaisonCourante'.
+  private ensureSaison(): Promise<void> {
+    if (this.SaisonCourante) {
+      return Promise.resolve();
+    }
+    return this.supabase.loginParameter('SaisonCourante').then((data: any) => {
+      this.SaisonCourante = data.Valeur;
+      this.getParsedSaison();
     });
   }
 
@@ -197,9 +223,15 @@ loadMatchsEquipe(): Promise<void> {
 
   loadCategories(saison: string): void {
     this.supabase.loadCategories(saison).then((data: Categorie[]) => {
+      this.Categories = data;
       this.categoriesSubject.next(data);
       //console.log('Catégories chargées dans GlobalService :', data);
     });
+  }
+
+  // Charge les catégories de la saison courante (lue depuis le paramètre 'Saison').
+  loadCategoriesSaisonCourante(): void {
+    this.ensureSaison().then(() => this.loadCategories(this.SaisonCourante));
   }
 
   getCategories(): Observable<Categorie[]> {
@@ -235,11 +267,12 @@ loadMatchsEquipe(): Promise<void> {
   }
 
   loadEquipesPoule(codeCategorie: number): void {
-    console.log("GlobalService: affiche les équipes déjà chargées", this.Equipes);
-    if (this.Equipes.length == 0) {
-      console.log("GlobalService: rien de charger... on charge toutes les équipes");
-      this.loadAllEquipes();
-    }
+    console.log("GlobalService: chargement des équipes pour la poule", codeCategorie);
+    this.supabase.loadEquipesParCategorie(codeCategorie).then((data: Equipe[]) => {
+      this.Equipes = data;
+      this.equipesAllSubject.next(data);
+      console.log("GlobalService: équipes de la poule chargées", codeCategorie, data);
+    });
   }
 
   logDebug(...args: any[]) {

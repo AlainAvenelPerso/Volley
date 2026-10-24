@@ -1,15 +1,6 @@
 // src/environments/environment.ts
 export const environment = {
-  production: false,
-  firebaseConfig: {
-  apiKey: "AIzaSyDxfeuR6QJqu3OObOPTWLhhlzOgSSL1O1s",
-  authDomain: "volley-a86b5.firebaseapp.com",
-  projectId: "volley-a86b5",
-  storageBucket: "volley-a86b5.firebasestorage.app",
-  messagingSenderId: "562442165643",
-  appId: "1:562442165643:web:f36ff9d75f3a886114e38e"
-  },
-    debugAppCheck: true
+  production: false
 };
 
 export const supabase = {

@@ -7,8 +7,13 @@
         <p class="error-message">{{ adminErrorMessage }}</p>
       }
       <form (ngSubmit)="loginAdmin()">
-        <input #adminPwd type="password" [(ngModel)]="adminPassword" name="adminPassword"
-               placeholder="Mot de passe administrateur" required />
+        <div class="pwd-field">
+          <input #adminPwd [type]="showAdminPassword ? 'text' : 'password'" [(ngModel)]="adminPassword" name="adminPassword"
+                 placeholder="Mot de passe administrateur" required />
+          <button type="button" class="pwd-toggle" (click)="toggleShowAdminPassword()" [attr.aria-label]="showAdminPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" [attr.aria-pressed]="showAdminPassword">
+            <mat-icon>{{ showAdminPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
         <button type="submit">Se connecter</button>
       </form>
     </div>

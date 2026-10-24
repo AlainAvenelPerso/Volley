@@ -18,6 +18,18 @@ body {
   flex-direction: column;
   height: 100vh;
   /* toute la hauteur de la fenêtre */
+  position: relative;
+}
+
+.app-version {
+  position: fixed;
+  bottom: 4px;
+  right: 8px;
+  font-size: 11px;
+  color: #94a3b8;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 1000;
 }
 
 // app-root {

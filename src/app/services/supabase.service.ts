@@ -372,14 +372,18 @@ async loadNomEquipe(id: string) {
   async loadEquipes(categories: Categorie[]): Promise<Equipe[]> {
     try {
 
+      if (!categories || categories.length === 0) {
+        console.warn('loadEquipes appelé sans catégories : aucune équipe à charger.');
+        return [];
+      }
 
       console.log('Récupération des équipes de la saison');
       // Query the 'Equipes' table for matching username and password hash
+      const codesCategories = categories.map(c => c.codeCategorie);
       const { data, error } = await this.supabase
         .from('Equipes')
         .select(`Nom_Equipe, Code_Equipe, Code_Categorie, Categories ("Nom_Categorie") `)
-        .gte('Code_Categorie', Math.min(...categories.map(c => c.codeCategorie)))
-        .lte('Code_Categorie', Math.max(...categories.map(c => c.codeCategorie)))
+        .in('Code_Categorie', codesCategories)
         .order('Nom_Equipe', { ascending: true });
 
       if (error) {
@@ -401,6 +405,30 @@ async loadNomEquipe(id: string) {
       throw new Error('Problème lors de la récupération des équipes.');
     } catch (error: any) {
       console.error('Erreur Supabase:', error.message);
+      throw error;
+    }
+  }
+
+  // Charge les équipes d'une catégorie (poule) précise, sans filtrage par plage.
+  async loadEquipesParCategorie(codeCategorie: number): Promise<Equipe[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('Equipes')
+        .select(`Nom_Equipe, Code_Equipe, Code_Categorie, Categories ("Nom_Categorie") `)
+        .eq('Code_Categorie', codeCategorie)
+        .order('Nom_Equipe', { ascending: true });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const equipes = (data ?? []).map(
+        (row: any) => new Equipe(row.Code_Equipe, row.Nom_Equipe, row.Code_Categorie, row.Categories?.Nom_Categorie ?? '')
+      );
+      console.log('loadEquipesParCategorie', codeCategorie, equipes);
+      return equipes;
+    } catch (error: any) {
+      console.error('Erreur Supabase (loadEquipesParCategorie):', error.message);
       throw error;
     }
   }
@@ -1394,11 +1422,13 @@ async loadNomEquipe(id: string) {
     Nom_Equipe: string;
     Code_Categorie: number;
   } | null> {
+    // Plusieurs lignes peuvent exister pour un même Code_Equipe (ex : une par saison).
+    // On récupère donc toutes les lignes et on accepte si l'une d'elles correspond au mot de passe.
     const { data, error } = await this.supabase
       .from('Equipes')
       .select('Code_Equipe, Nom_Equipe, Code_Categorie, Mot2Passe')
       .eq('Code_Equipe', codeEquipe)
-      .limit(1);
+      .order('Code_Categorie', { ascending: false });
 
     if (error) {
       throw new Error(`Lecture Equipes échouée : ${error.message}`);
@@ -1408,11 +1438,14 @@ async loadNomEquipe(id: string) {
       return null;
     }
 
-    const equipe = data[0] as any;
     const motDePasseHash = crypto.SHA256(motDePasse).toString();
-    const stocke = equipe.Mot2Passe ?? '';
     // Compare au hash ; accepte aussi une éventuelle valeur historique en clair.
-    if (stocke !== motDePasseHash && stocke !== motDePasse) {
+    const equipe = data.find((e: any) => {
+      const stocke = e.Mot2Passe ?? '';
+      return stocke === motDePasseHash || stocke === motDePasse;
+    });
+
+    if (!equipe) {
       return null;
     }
 

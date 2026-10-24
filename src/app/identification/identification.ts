@@ -3,15 +3,16 @@ import { FormsModule } from '@angular/forms';
 import { AppMessageService } from '../services/app-message.service';
 import { GlobalService } from '../services/global';
 import { Router } from '@angular/router';
-import { firstValueFrom, Observable, skip, tap } from 'rxjs';
+import { firstValueFrom, Observable, tap } from 'rxjs';
 import { Equipe } from '../../models/models';
 import { CommonModule } from '@angular/common';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { AuthService } from '../services/auth.service';
 import { SupabaseService } from '../services/supabase.service';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-identification',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, MatIconModule],
   templateUrl: './identification.html',
   styleUrls: ['./identification.scss'],
 
@@ -22,6 +23,7 @@ export class IdentificationComponent {
   loginErrorMessage: string = '';
   isLoadingEquipes: boolean = true;
   isConnected = false;
+  showPassword: boolean = false;
   userID$!: Observable<string>;
   equipesAll$!: Observable<Equipe[]>;
 
@@ -42,11 +44,13 @@ export class IdentificationComponent {
   }
 
   ngOnInit(): void {
+    // Réinitialise les champs pour éviter toute valeur résiduelle (ex. autofill navigateur après déconnexion).
+    this.code_equipe = '';
+    this.password = '';
     if (this.globalService.getEquipeConnectee().code == 0) {       // load teams
       this.globalService.loadAllEquipes();
       this.equipesAll$ = this.globalService.getAllEquipes().pipe(
-        skip(1),
-        tap(() => this.isLoadingEquipes = false)
+        tap((equipes) => this.isLoadingEquipes = equipes.length === 0)
       );
       console.log("Equipes ", this.equipesAll$);
     }
@@ -109,6 +113,10 @@ export class IdentificationComponent {
     if (this.loginErrorMessage) {
       this.loginErrorMessage = '';
     }
+  }
+
+  toggleShowPassword(): void {
+    this.showPassword = !this.showPassword;
   }
 
   toggleModeAdmin(): void {

@@ -121,3 +121,46 @@
   padding: 0.5rem;
   width: 100%;
 }
+
+.pwd-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pwd-field .pwd-input {
+  padding-right: 44px;
+}
+
+.pwd-field .pwd-input::-ms-reveal,
+.pwd-field .pwd-input::-ms-clear {
+  display: none;
+}
+
+.pwd-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #cfe8ff;
+  cursor: pointer;
+}
+
+.pwd-toggle mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+}
+
+.pwd-toggle:hover {
+  color: #f8fafc;
+}
